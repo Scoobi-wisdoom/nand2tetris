@@ -1,3 +1,8 @@
+# Overview
+This README is about notes on nand2tetris courses from [coursera](https://www.coursera.org/learn/build-a-computer).
+
+Also projects in the current directory are assignments of the courses.
+
 # Week 1
 Computer systems are about abstractions and implementations.
 Upon abstractions one is allowed to build something while not taking care of the actual implementation, and that something built already would also be taken into account as an abstraction in turn.
@@ -33,3 +38,26 @@ Above only positive integers are concerned. How about negative integers? 2^n -x 
 Arithmetic Logic Unit
 ALU computes a function, and this function is pre-determined for arithmetic and logical operations.
 In ALU, there are two inputs, and control bits (zx, nx, zy, ny, f, no; zr, ng).
+
+# Week 3
+Memory logic is sequential or clock-based while computer's processing chips are on combinational logic.
+
+Combinatorial: out[t] = function(in[t])
+Sequential: state[t] = function(state[t-1])
+
+Physical time is continuous but computer's time is not but discrete. To deal with this difference a time unit (clock) is used. Discrete time steps are used to ensure the system state is stabilized. This is done by both of ignoring a signal from the beginning of the time unit and considering the later state of the time unit.
+
+The state is either 1 or 0. Gates that can flip between two states are called Flip-Flops.
+
+The comparison between DFF and Bit chips is as follows.
+>DFF always stores the “in” bit, while Bit only stores it if “load” is set to 1. DFF can store information for one time unit only, while Bit can store it for many cycles.
+
+The atomic element of a memory is a register, which consists of many bit chips. Also, register's state means the value currently stored in the register.
+
+Registers are used to build a RAM.
+>At any given point of time, only one register in the RAM is selected.
+>Width is the amount of data a single register holds, address is the location of the register within a larger chip.
+
+The reason why RAM is named as "Random Access Memory" is because however many do registers exist inside the memory, the access time is always the same.
+
+A counter is an implementation of an abstraction to track instructions for the next fetch and execution.
