@@ -47,7 +47,7 @@ Sequential: state[t] = function(state[t-1])
 
 Physical time is continuous but computer's time is not but discrete. To deal with this difference a time unit (clock) is used. Discrete time steps are used to ensure the system state is stabilized. This is done by both of ignoring a signal from the beginning of the time unit and considering the later state of the time unit.
 
-The state is either 1 or 0. Gates that can flip between two states are called Flip-Flops.
+The state is either 1 or 0. Gates that can flip between two states are called Flip-Flops. A flip flop gate is a device of an abstraction to store information over time.
 
 The comparison between DFF and Bit chips is as follows.
 >DFF always stores the “in” bit, while Bit only stores it if “load” is set to 1. DFF can store information for one time unit only, while Bit can store it for many cycles.
@@ -61,3 +61,6 @@ Registers are used to build a RAM.
 The reason why RAM is named as "Random Access Memory" is because however many do registers exist inside the memory, the access time is always the same.
 
 A counter is an implementation of an abstraction to track instructions for the next fetch and execution.
+
+# References
+-  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
