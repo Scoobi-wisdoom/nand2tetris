@@ -49,16 +49,18 @@ Physical time is continuous but computer's time is not but discrete. To deal wit
 
 The state is either 1 or 0. Gates that can flip between two states are called Flip-Flops. A flip flop gate is a device of an abstraction to store information over time.
 
-The comparison between DFF and Bit chips is as follows.
+The comparison between DFF and Bit chips is as follows. Also, keep that in mind that a bit chip is called as a 1-bit register.
 >DFF always stores the “in” bit, while Bit only stores it if “load” is set to 1. DFF can store information for one time unit only, while Bit can store it for many cycles.
+
+The DFF is a bottom building block of all the memory chips such as registers, RAMs, counters, etc. in the computer. In the computer, all of those DFFs are connected to the single clock, which enables the computer to do synchronization.
 
 The atomic element of a memory is a register, which consists of many bit chips. Also, register's state means the value currently stored in the register.
 
-Registers are used to build a RAM.
+Registers are used to build a RAM. All chips built directly or indirectly from DFFs are time dependent.
 >At any given point of time, only one register in the RAM is selected.
 >Width is the amount of data a single register holds, address is the location of the register within a larger chip.
 
-The reason why RAM is named as "Random Access Memory" is because however many do registers exist inside the memory, the access time is always the same.
+The reason why RAM is named as "Random Access Memory" is because however many do registers exist inside the memory, the access time is always the same. How is this possible? It is because even though registers are sequential, access to them through address is combinational. The addresses do not belong to the chip hardware but are a kind of a logic gate.
 
 A counter is an implementation of an abstraction to track instructions for the next fetch and execution.
 
