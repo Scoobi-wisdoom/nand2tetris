@@ -3,6 +3,10 @@ This README is about notes on nand2tetris courses from [coursera](https://www.co
 
 Also projects in the current directory are assignments of the courses.
 
+# Struggles
+project 2: ALU.hdl
+project 3: Bit.hdl, RAM8.hdl, PC.hdl
+
 # Week 1
 Computer systems are about abstractions and implementations.
 Upon abstractions one is allowed to build something while not taking care of the actual implementation, and that something built already would also be taken into account as an abstraction in turn.
