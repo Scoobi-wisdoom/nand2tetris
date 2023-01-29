@@ -14,5 +14,8 @@ CHIP Bit {
     OUT out;
 
     PARTS:
-    // Put your code here:
+    Mux(a=outAsState, b=in, sel=load, out=a);
+
+    // 똑같은 이름의 parameter를 여러 번 쓸 수 있다는 걸 알아야 풀 수 있는 문제다.
+    DFF(in=a, out=out, out=outAsState);
 }

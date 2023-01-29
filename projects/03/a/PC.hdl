@@ -16,5 +16,13 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    Inc16(in=outAsState, out=plusOne);
+
+    // 여러 Mux 중 Mux16을 써야 한다는 걸 알아야 풀 수 있는 문제다.
+    Mux16(a=outAsState, b=plusOne, sel=inc, out=loadIn);
+    Mux16(a=loadIn, b=in, sel=load, out=resetIn);
+    Mux16(a=resetIn, b=false, sel=reset, out=registerIn);
+
+    // 항상 할당한다는 생각을 해야 푸는 문제다.
+    Register(in=registerIn, load=true, out=out, out=outAsState);
 }
