@@ -4,7 +4,7 @@ This README is about notes on nand2tetris courses from [coursera](https://www.co
 Also projects in the current directory are assignments of the courses.
 
 # Struggles
-project 2: ALU.hdl
+project 2: ALU.hdl  
 project 3: Bit.hdl, RAM8.hdl, PC.hdl
 
 # Week 1
@@ -67,6 +67,19 @@ Registers are used to build a RAM. All chips built directly or indirectly from D
 The reason why RAM is named as "Random Access Memory" is because however many do registers exist inside the memory, the access time is always the same. How is this possible? It is because even though registers are sequential, access to them through address is combinational. The addresses do not belong to the chip hardware but are a kind of a logic gate.
 
 A counter is an implementation of an abstraction to track instructions for the next fetch and execution.
+
+# Week 4
+>Machine language is specification of the hardware/software interface.
+
+There are three types of machine operations such as arithmetic operations, logical operations and flow control. Be aware of that a machine language does not necessarily have the same set of operations or data types (64 bit width, floating point and so on) with others do.
+
+Memory Hierarchy was introduced by Von Neumann to cope with expensive cost of accessing memories caused by both of supplying a long address and fetching values in the memory into the CPU.
+
+Memory Hierarchy is about a tradeoff between distance from the CPU and size of memories. The closest to the CPU and the smallest registers could perform according to addressing modes such as register, direct, indirect, immediate ones.
+
+Since there are an enormous number of inputs and outputs, the CPU needs a protocol to comprehend them so that which type of inputs or outputs are accessible in which address of the memory.
+
+When it comes to Flow Control, machine instructions are executed by the CPU in sequence, if not "jump."
 
 # References
 -  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
