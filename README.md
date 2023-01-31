@@ -81,5 +81,13 @@ Since there are an enormous number of inputs and outputs, the CPU needs a protoc
 
 When it comes to Flow Control, machine instructions are executed by the CPU in sequence, if not "jump."
 
+The Hack computer to be built in this course consists of instruction memories (ROM), CPU, and data memories (RAM) with instruction bus, data bus and address buses. Also, the Hack computer has three kinds of registers such as D, A and M registers.
+
+>The Hack program is a sequence of instructions written in the Hack machine language.
+
+The Hack computer is controlled by using the reset button to load the ROM with a Hack program.
+>The reset button is only used once per program.
+
+
 # References
 -  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
