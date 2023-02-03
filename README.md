@@ -88,6 +88,9 @@ The Hack computer to be built in this course consists of instruction memories (R
 The Hack computer is controlled by using the reset button to load the ROM with a Hack program.
 >The reset button is only used once per program.
 
+Ram has a screen memory map for output and keyboard memory map for input.
+
+Be aware that a computer never ends executing a program when turned on, which means that even when there is no instruction, i.e. nope instruction, a computer executes that instruction. A hacker may hide a malicious instruction after a number of lines of nope instructions. To prevent this, you are recommended to end the instruction by an infinite loop to take control.
 
 # References
 -  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
