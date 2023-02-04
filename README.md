@@ -92,5 +92,10 @@ Ram has a screen memory map for output and keyboard memory map for input.
 
 Be aware that a computer never ends executing a program when turned on, which means that even when there is no instruction, i.e. nope instruction, a computer executes that instruction. A hacker may hide a malicious instruction after a number of lines of nope instructions. To prevent this, you are recommended to end the instruction by an infinite loop to take control.
 
+There are some examples of the contract of instructions in the Hack program.
+> - A reference to a symbol that has no corresponding label declaration is treated as a reference to a variable.
+> - Variables are allocated to the RAM from address 16 onward.
+> - Variables that store memory addresses, like **arr** and **i**, are called *pointers*.
+
 # References
 -  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
