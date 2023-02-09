@@ -5,7 +5,8 @@ Also projects in the current directory are assignments of the courses.
 
 # Struggles
 project 2: ALU.hdl  
-project 3: Bit.hdl, RAM8.hdl, PC.hdl
+project 3: Bit.hdl, RAM8.hdl, PC.hdl  
+project 4: Fill.asm
 
 # Week 1
 Computer systems are about abstractions and implementations.

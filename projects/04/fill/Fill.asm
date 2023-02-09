@@ -11,4 +11,64 @@
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
-// Put your code here.
+(SETVARIABLE)
+    @8191
+    D=A
+    @n
+    M=D // n = 8191
+    
+    @i
+    M=0 // i = 0
+
+    @SCREEN
+    D=A
+    @address
+    M=D // address = 16384
+
+(KEYBOARD)
+    @KBD
+    D=M
+    @WHITE
+    D;JEQ
+
+(BLACK)
+    @i
+    D=M
+    @n
+    D=D-M
+    @SETVARIABLE
+    D;JGT // if i > n goto SETVARIABLE
+
+    @address
+    A=M
+    M=-1 // RAM[address] = -1
+
+    @i
+    M=M+1
+
+    @address
+    M=M+1
+
+    @BLACK
+    0;JMP
+
+(WHITE)
+    @i
+    D=M
+    @n
+    D=D-M
+    @SETVARIABLE
+    D;JGT // if i > n goto SETVARIABLE
+
+    @address
+    A=M
+    M=0 // RAM[address] = 0
+
+    @i
+    M=M+1
+
+    @address
+    M=M+1
+
+    @WHITE
+    0;JMP
