@@ -98,5 +98,23 @@ There are some examples of the contract of instructions in the Hack program.
 > - Variables are allocated to the RAM from address 16 onward.
 > - Variables that store memory addresses, like **arr** and **i**, are called *pointers*.
 
+# Week 5
+There are three kinds of information flows in computer: control, address and data.
+>The ALU loads information from the Data bus and manipulates it using the Control bits.
+
+<!-- This may not be true. -->
+Fetch means putting the next instruction inside the address of a memory and then reading that location with exploitation of Program Counter.
+
+ALU does calculations and at the same time it sends the result to D, A and M registers. This does not mean that all of those three receive the result. The receipt is decided by the instruction's *destination bits*.
+
+>Program Counter emits the address of the next instruction.
+
+There are two kinds of computers when it comes to purpose: general-purpose and single-purpose ones. The general-purpose one is a computer meant to execute various programs. For examples, personal computers and cell phones. The single-purpose computer has a single program. For example, embedded computers in cameras, cars etc. You should be aware that those two kinds of computers have the same architecture in foundation as follows.
+>stored programs, fetch-decode-execute logic, CPU, registers, and counters.
+
+Computers have either a single address space or two separate address spaces to store data and instructions. The latter is called Harvard architecture which is used in embedded computers. 
+
+When using a single memory space there is a clash between fetch and execute cycle, because the fetch cycle reads from the program memory while the execute cycle reads from the data memory and those two cycles share the same memory.
+
 # References
 -  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
