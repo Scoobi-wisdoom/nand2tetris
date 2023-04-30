@@ -27,5 +27,36 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    DMux(in=load, sel=address[14], a=aLoad, b=bLoad);
+
+    RAM16K(in=in, load=aLoad, address=address[0..13], out=ramOut);
+    
+    Screen(in=in, load=bLoad, address=address[0..12], out=screenOut);
+    
+    Keyboard(out=keyboardOut);
+
+    // firstCondition && secondCondition -> keyboard
+    And(a=firstCondition, b=secondCondition, out=isKeyboard);
+    
+    // firstCondition: address[14] == true && address[13] == true
+    And(a=address[14], b=address[13], out=firstCondition);
+    
+    // secondCondition: address[0..12] == false
+    Or(a=address[0], b=address[1], out=orFirst);
+    Or(a=orFirst, b=address[2], out=orSecond);
+    Or(a=orSecond, b=address[3], out=orThird);
+    Or(a=orThird, b=address[4], out=orFourth);
+    Or(a=orFourth, b=address[5], out=orFifth);
+    Or(a=orFifth, b=address[6], out=orSixth);
+    Or(a=orSixth, b=address[7], out=orSeventh);
+    Or(a=orSeventh, b=address[8], out=orEighth);
+    Or(a=orEighth, b=address[9], out=orNineth);
+    Or(a=orNineth, b=address[10], out=orTenth);
+    Or(a=orTenth, b=address[11], out=orEleventh);
+    Or(a=orEleventh, b=address[12], out=orLast);
+    Not(in=orLast, out=secondCondition);
+
+    Mux16(a=screenOut, b=keyboardOut, sel=isKeyboard, out=ioOut);
+
+    Mux16(a=ramOut, b=ioOut, sel=address[14], out=out);
 }

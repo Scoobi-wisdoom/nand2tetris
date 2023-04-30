@@ -39,5 +39,70 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    // References: 
+    // https://people.duke.edu/~nts9/logicgates/CPU.hdl
+    // https://github.com/havivha/Nand2Tetris/blob/master/05/CPU.hdl
+    
+    // instruction 을 15, 12..0 모두 활용해야 한다는 걸 알아야 풀 수 있는 문제.
+
+
+    Not(in=instruction[15], out=isAInstruction);
+    Not(in=isAInstruction, out=isCInstruction);
+
+    // textbook 69p. 에서 ARegister 를 사용하는 C-instruction 을 파악해야 한다.
+    And(a=isCInstruction, b=instruction[5], out=doesAluModerateARegister);
+    // ARegister 에 ALU 가 영향을 미친다는 걸 기억해야 풀 수 있는 문제.
+    // ARegister 에 어떤 input 이 들어가는지 알야아 풀 수 있는 문제.
+    Mux16(a=instruction, b=aluOut, sel=doesAluModerateARegister, out=aRegisterIn);
+
+    // A-instruction 이 ARegister 와 직접적 관련이 있음을 알아야 한다.
+    Or(a=isAInstruction, b=doesAluModerateARegister, out=aRegisterLoad);
+    // ARegister 의 out 은 정의에 의해 addressM 이기도 하다.
+    ARegister(in=aRegisterIn, load=aRegisterLoad, out=aRegisterOut, out[0..14]= addressM);
+
+    // textbook 69p. 에서 메모리 데이터, 즉, M 을 사용하는지 여부를 어떻게 판단하는지 봐야 풀 수 있는 문제.
+    Xor(a=isAInstruction, b=instruction[12], out=isM);
+    Mux16(a=aRegisterOut, b=inM, sel=isM, out=addressOrValue);
+
+
+    // textbook 69p. 에서 ALU 의 x, y 파라미터가 각각 ARegisterOut 과 addressOrValue 임을 알아야 풀 수 있는 문제.
+    // textbook 69p. 에서 A, D, M 의 값을 보고 ALU 의 zx, nx, zy, ny, f, no 등을 판단해야 풀 수 있는 문제.
+    // ALU 의 out 이 outM 이라는 걸 알아야 풀 수 있는 문제.
+    ALU(
+        x=dRegisterOut, y=addressOrValue, 
+        zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6],
+        out=aluOut, out=outM, zr=zr, ng=ng
+     );
+
+    // DRegister 에 할당하는 명령은 C-instruction 만 가능하다.
+    // textbook 69p. 에서 DRegister 와 관련된 C-instruction 종류를 파악해야 풀 수 있는 문제.
+    And(a=isCInstruction, b=instruction[4], out=dRegisterLoad);
+    DRegister(in=aluOut, load=dRegisterLoad, out=dRegisterOut);
+
+    // M 에 값을 쓸지 여부는 C-instruction 에서 정한다.
+    // textbook 69p. 에서 M 과 관련된 C-instruction 종류를 파악해야 풀 수 있는 문제.
+    And(a=isCInstruction, b=instruction[3], out=writeM);
+    
+    
+    // textbook 69p. 에서 comp 를 계산하기 위해서는 ALU 의 zr, ng 를 참조해야 한다는 걸 파악해야 풀 수 있는 문제.
+    // comp = 0, comp < 0 을 zr, ng 로 구할 수 있기 때문에, comp >= 0 (JGE) 와 comp != 0 (JNE) 는 따로 구할 필요가 없다.
+    And(a=zr, b=instruction[1], out=jeq);
+    And(a=ng, b=instruction[2], out=jlt);
+    Or(a=zr, b=ng, out=zrOrNg);
+    
+    Not(in=zrOrNg, out=positive);
+
+    And(a=positive, b=instruction[0], out=jgt);
+    // And 가 아니라 Or 임을 생각해야 한다.
+    Or(a=jeq, b=jlt, out=jle);
+    Or(a=jgt, b=jle, out=jmp);
+
+    // jmp 와 load 가 직접적으로 연관된다는 걸 알아야 풀 수 있는 문제.
+    And(a=isCInstruction, b=jmp, out=load);
+    // load 와 inc 는 서로 상반된다는 점을 알아야 풀 수 있는 문제.
+    Not(in=load, out=inc);
+
+    // PC 의 input 은 DRegister 가 아니라 ARegister 와 관련된다는 걸 알아야 풀 수 있는 문제.
+    // 16 bit 컴퓨터지만, out 은 15 비트까지만 사용한다는 걸 파악해야 풀 수 있는 문제.
+    PC(in=aRegisterOut, load=load, inc=inc, reset=reset, out[0..14]=pc);
 }
