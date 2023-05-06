@@ -117,5 +117,17 @@ Computers have either a single address space or two separate address spaces to s
 
 When using a single memory space there is a clash between fetch and execute cycle, because the fetch cycle reads from the program memory while the execute cycle reads from the data memory and those two cycles share the same memory.
 
+# Week 6
+> The Assembler is the first softwaere layer above the hardware.
+
+> Machine languages are typically specified in two flavors: *binary* and *symbolic*.
+
+Each aseembly command is mapped to integer numbers of binary form.
+
+Assembler symbols (labels and variables) must be replaced with addresses in RAM. Variables are assigned to the first next empty cell of RAM which is to be looked up later. Labels are defined so that the program always knows which should be executed next time. Now there is a challenge. What if a label has not been defined yet, but the jump should be executed towards it? There are two ways of handling this complication. One, you have two mapping tables, one of which is the real mapping table and the other is a temporary one. Two, at first you complete reading the instruction only to focusing on labels and define everything. And then actually execute the commands. Keep in mind that this problem doese not occur with predefined symbols.
+
+The assembler does not generate binary code for label declarations in an instruction. So the labels are also called *pseudo-instructions*.
+
+
 # References
 -  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
