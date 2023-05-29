@@ -22,22 +22,24 @@ class ConvertAssemblyTest {
 
     @Test
     fun `assign A to D`() {
-        val binaryArray = convertAssembly.convert("D=A")
+        val cInstruction = convertAssembly.convert("D=A")
 
-        assertTrue(binaryArray == "1110110000010000")
+        println(cInstruction)
+
+        assertTrue(cInstruction == "1110110000010000")
     }
 
     @Test
     fun `assign D+A to D`() {
-        val binaryArray = convertAssembly.convert("D=D+A")
+        val cInstruction = convertAssembly.convert("D=D+A")
 
-        assertTrue(binaryArray == "1110000010010000")
+        assertTrue(cInstruction == "1110000010010000")
     }
 
     @Test
     fun `assign D to M`() {
-        val binaryArray = convertAssembly.convert("M=D")
+        val cInstruction = convertAssembly.convert("M=D")
 
-        assertTrue(binaryArray == "1110001100001000")
+        assertTrue(cInstruction == "1110001100001000")
     }
 }
