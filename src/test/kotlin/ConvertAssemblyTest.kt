@@ -11,12 +11,14 @@ class ConvertAssemblyTest {
         val zero = convertAssembly.convert("@0")
         val two = convertAssembly.convert("@2")
         val three = convertAssembly.convert("@3")
+        val thirtyTwo = convertAssembly.convert("@32")
 
         assertAll(
             { assertTrue(sp == "0000000000000000") },
             { assertTrue(zero == "0000000000000000") },
             { assertTrue(two == "0000000000000010") },
             { assertTrue(three == "0000000000000011") },
+            { assertTrue(thirtyTwo == "0000000000100000") },
         )
     }
 
