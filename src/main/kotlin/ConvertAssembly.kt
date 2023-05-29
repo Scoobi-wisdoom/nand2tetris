@@ -60,7 +60,13 @@ class ConvertAssembly {
     }
 
     private fun getComputation(lowercaseCommand: String): String {
-        val computation = lowercaseCommand.substringAfter(EQUAL)
+        val hasEqual = lowercaseCommand.contains(EQUAL)
+        val hasSemiColon = lowercaseCommand.contains(SEMI_COLON)
+        check(hasEqual xor hasSemiColon)
+
+        val computation = if (hasEqual) lowercaseCommand.substringAfter(EQUAL) else
+            lowercaseCommand.substringBefore(SEMI_COLON)
+
         return checkNotNull(computationToBinary[computation])
     }
 
@@ -69,7 +75,7 @@ class ConvertAssembly {
         val hasSemiColon = lowercaseCommand.contains(SEMI_COLON)
         check(hasEqual xor hasSemiColon)
 
-        val destination = if (hasEqual) lowercaseCommand.substringBefore(EQUAL) else lowercaseCommand.substringBefore(SEMI_COLON)
+        val destination = if (hasEqual) lowercaseCommand.substringBefore(EQUAL) else null
 
         return destinationToBinary[destination] ?: "000"
     }

@@ -42,4 +42,11 @@ class ConvertAssemblyTest {
 
         assertTrue(cInstruction == "1110001100001000")
     }
+
+    @Test
+    fun `jump greater than D`() {
+        val cInstruction = convertAssembly.convert("d;jgt")
+
+        assertTrue(cInstruction == "1110001100000001")
+    }
 }
