@@ -13,26 +13,23 @@ class ConvertAssembly {
     fun convert(command: String): String {
         val lowercaseCommand = command.lowercase()
 
-        return if (isAddressOrVariable(lowercaseCommand)) {
+        return if (command.startsWith(AT)) {
+            // TODO("starting with @ does not mean it is either an address or variable since it could be a label.")
             convertIntoAInstruction(lowercaseCommand)
         } else {
             convertIntoCInstruction(lowercaseCommand)
         }
     }
 
-    private fun isAddressOrVariable(command: String): Boolean {
-        return command.startsWith(AT)
-    }
-
     private fun convertIntoAInstruction(command: String): String {
-        check(isAddressOrVariable(command))
+        check(command.startsWith(AT))
         val addressOrVariable = command.substringAfter(AT)
 
         return if (isAddress(addressOrVariable)) {
             val decimalAddress = predefinedSymbols[addressOrVariable] ?: parseDigit(addressOrVariable).toInt()
             getSixteenDigitBinary(decimalAddress)
         } else {
-            TODO("line number of each announced variable is necessary.")
+            TODO("The total number of variables and the index of the given variable are required.")
         }
     }
 
