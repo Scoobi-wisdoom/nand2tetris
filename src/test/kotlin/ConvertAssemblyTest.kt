@@ -49,4 +49,15 @@ class ConvertAssemblyTest {
 
         assertTrue(cInstruction == "1110001100000001")
     }
+
+    @Test
+    fun `assign M - 1 to MD`() {
+        val cInstruction = convertAssembly.convert("md=m-1")
+
+        println(cInstruction)
+        "1111110010000000"
+        "1111110010011000"
+
+        assertTrue(cInstruction == "1111110010011000")
+    }
 }

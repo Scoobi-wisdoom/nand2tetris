@@ -153,11 +153,23 @@ class ConvertAssembly {
     private val destinationToBinary = mapOf(
         "m" to "001",
         "d" to "010",
-        "dm" to "011",
         "a" to "100",
+
+        "dm" to "011",
+        "md" to "011",
+
         "am" to "101",
+        "ma" to "101",
+
         "ad" to "110",
+        "da" to "110",
+
         "adm" to "111",
+        "amd" to "111",
+        "dam" to "111",
+        "dma" to "111",
+        "mda" to "111",
+        "mad" to "111",
     )
 
     private val jumpToBinary = mapOf(
