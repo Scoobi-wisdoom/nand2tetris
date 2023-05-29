@@ -3,9 +3,9 @@ import java.io.File
 fun main() {
     val fileNames = listOf(
         "add/Add$ASM_EXTENSION",
-        "max/Max$ASM_EXTENSION",
-        "pong/Pong$ASM_EXTENSION",
-        "rect/Rect$ASM_EXTENSION",
+        "max/MaxL$ASM_EXTENSION",
+        "pong/PongL$ASM_EXTENSION",
+        "rect/RectL$ASM_EXTENSION",
     )
     val fileNameToLines = fileNames.associateWith { getLines(it) }
 
