@@ -24,8 +24,6 @@ class ConvertAssemblyTest {
     fun `assign A to D`() {
         val cInstruction = convertAssembly.convert("D=A")
 
-        println(cInstruction)
-
         assertTrue(cInstruction == "1110110000010000")
     }
 
