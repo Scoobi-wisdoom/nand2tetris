@@ -11,13 +11,11 @@ class ConvertAssembly {
     private val numericRegex = Regex("\\d+")
 
     fun convert(command: String): String {
-        val lowercaseCommand = command.lowercase()
-
         return if (command.startsWith(AT)) {
             // TODO("starting with @ does not mean it is either an address or variable since it could be a label.")
-            convertIntoAInstruction(lowercaseCommand)
+            convertIntoAInstruction(command)
         } else {
-            convertIntoCInstruction(lowercaseCommand)
+            convertIntoCInstruction(command)
         }
     }
 
@@ -50,37 +48,37 @@ class ConvertAssembly {
         return decimalAddress.toString(2).padStart(16, '0')
     }
 
-    private fun convertIntoCInstruction(lowercaseCommand: String): String {
-        val computation = getComputation(lowercaseCommand)
-        val destination = getDestination(lowercaseCommand)
-        val jump = getJump(lowercaseCommand)
+    private fun convertIntoCInstruction(command: String): String {
+        val computation = getComputation(command)
+        val destination = getDestination(command)
+        val jump = getJump(command)
 
         return "$C_INSTRUCTION_PREFIX$computation$destination$jump"
     }
 
-    private fun getComputation(lowercaseCommand: String): String {
-        val hasEqual = lowercaseCommand.contains(EQUAL)
-        val hasSemiColon = lowercaseCommand.contains(SEMI_COLON)
+    private fun getComputation(command: String): String {
+        val hasEqual = command.contains(EQUAL)
+        val hasSemiColon = command.contains(SEMI_COLON)
         check(hasEqual xor hasSemiColon)
 
-        val computation = if (hasEqual) lowercaseCommand.substringAfter(EQUAL) else
-            lowercaseCommand.substringBefore(SEMI_COLON)
+        val computation = if (hasEqual) command.substringAfter(EQUAL) else
+            command.substringBefore(SEMI_COLON)
 
         return checkNotNull(computationToBinary[computation])
     }
 
-    private fun getDestination(lowercaseCommand: String): String {
-        val hasEqual = lowercaseCommand.contains(EQUAL)
-        val hasSemiColon = lowercaseCommand.contains(SEMI_COLON)
+    private fun getDestination(command: String): String {
+        val hasEqual = command.contains(EQUAL)
+        val hasSemiColon = command.contains(SEMI_COLON)
         check(hasEqual xor hasSemiColon)
 
-        val destination = if (hasEqual) lowercaseCommand.substringBefore(EQUAL) else null
+        val destination = if (hasEqual) command.substringBefore(EQUAL) else null
 
         return destinationToBinary[destination] ?: "000"
     }
 
-    private fun getJump(lowercaseCommand: String): String {
-        val jump = lowercaseCommand.substringAfter(SEMI_COLON)
+    private fun getJump(command: String): String {
+        val jump = command.substringAfter(SEMI_COLON)
 
         return jumpToBinary[jump] ?: "000"
     }
