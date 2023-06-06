@@ -1,15 +1,7 @@
 import java.io.File
 
 fun main() {
-    val fileNames = listOf(
-        "add/Add$ASM_EXTENSION",
-        "max/MaxL$ASM_EXTENSION",
-        "pong/PongL$ASM_EXTENSION",
-        "rect/RectL$ASM_EXTENSION",
-        "max/Max$ASM_EXTENSION",
-        "pong/Pong$ASM_EXTENSION",
-        "rect/Rect$ASM_EXTENSION",
-    )
+    val fileNames = getTargetFileNames()
     val fileNameToLines = fileNames.associateWith { getLines(it) }
 
     val readAssembly = ReadAssembly()
@@ -22,13 +14,19 @@ fun main() {
         commands.map { convertAssembly.convert(it) }
     }
 
-    fileNameToConvertedCommands.entries.forEach {
-        createFiles(
-            exisingFilePath = it.key,
-            newExtension = HACK_EXTENSION,
-            content = it.value,
-        )
-    }
+    createFiles(fileNameToConvertedCommands)
+}
+
+private fun getTargetFileNames(): List<String> {
+    return listOf(
+        "add/Add$ASM_EXTENSION",
+        "max/MaxL$ASM_EXTENSION",
+        "pong/PongL$ASM_EXTENSION",
+        "rect/RectL$ASM_EXTENSION",
+        "max/Max$ASM_EXTENSION",
+        "pong/Pong$ASM_EXTENSION",
+        "rect/Rect$ASM_EXTENSION",
+    )
 }
 
 private fun getLines(fileName: String): List<String> {
@@ -37,7 +35,17 @@ private fun getLines(fileName: String): List<String> {
     }
 }
 
-private fun createFiles(
+private fun createFiles(fileNameToConvertedCommands: Map<String, List<String>>) {
+    fileNameToConvertedCommands.entries.forEach {
+        createFile(
+            exisingFilePath = it.key,
+            newExtension = HACK_EXTENSION,
+            content = it.value,
+        )
+    }
+}
+
+private fun createFile(
     exisingFilePath: String,
     newExtension: String,
     content: List<String>,
