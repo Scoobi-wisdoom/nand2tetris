@@ -15,36 +15,33 @@ class ConvertAssembly {
         symbols: Map<String, Int>,
     ): String {
         return if (command.startsWith(AT)) {
-            // TODO("starting with @ does not mean it is either an address or variable since it could be a label.")
-            convertIntoAInstruction(command)
+            convertIntoAInstruction(
+                command = command,
+                symbols = symbols,
+            )
+        } else if (command.startsWith("(")) {
+            ""
         } else {
             convertIntoCInstruction(command)
         }
     }
 
-    private fun convertIntoAInstruction(command: String): String {
+    private fun convertIntoAInstruction(
+        command: String,
+        symbols: Map<String, Int>,
+    ): String {
         check(command.startsWith(AT))
-        val addressOrVariable = command.substringAfter(AT)
+        val stringAfterAnnotation = command.substringAfter(AT)
 
-        return if (isAddress(addressOrVariable)) {
-            val decimalAddress = predefinedSymbols[addressOrVariable] ?: parseDigit(addressOrVariable).toInt()
-            getSixteenDigitBinary(decimalAddress)
-        } else {
-            TODO("The total number of variables and the index of the given variable are required.")
-        }
-    }
+        val correspondingValue = predefinedSymbols[stringAfterAnnotation]
+            ?: symbols[stringAfterAnnotation]
+            ?: parseDigit(stringAfterAnnotation).toInt()
 
-    private fun isAddress(addressOrVariable: String): Boolean {
-        return addressOrVariable in predefinedSymbols.keys || isNumeric(addressOrVariable)
-    }
-
-    private fun isNumeric(addressOrVariable: String): Boolean {
-        val parsedDigit = parseDigit(addressOrVariable)
-        return parsedDigit.isNotBlank() && parsedDigit.length == addressOrVariable.length
+        return getSixteenDigitBinary(correspondingValue)
     }
 
     private fun parseDigit(addressOrVariable: String): String {
-        return numericRegex.find(addressOrVariable)?.value ?: ""
+        return checkNotNull(numericRegex.find(addressOrVariable)?.value)
     }
 
     private fun getSixteenDigitBinary(decimalAddress: Int): String {
