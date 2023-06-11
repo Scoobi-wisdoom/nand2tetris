@@ -21,10 +21,20 @@ class ReadAssembly {
     }
 
     private fun getLabelToLocation(lines: List<String>): Map<String, Int> {
-        return lines.mapIndexedNotNull { index, parsedCommand ->
-            if (parsedCommand.startsWith("(") && parsedCommand.endsWith(")")) getLabel(parsedCommand) to index
-            else null
-        }.toMap()
+        val indexedLabelCommand = lines.withIndex()
+            .find { (_, parsedCommand) ->
+                parsedCommand.startsWith("(") && parsedCommand.endsWith(")")
+            } ?: return emptyMap()
+
+        val currentSymbolToLocation = mapOf(
+            getLabel(indexedLabelCommand.value) to indexedLabelCommand.index
+        )
+
+        val linesWithoutCurrentLabel = lines.filterIndexed { index, _ ->
+            index != indexedLabelCommand.index
+        }
+
+        return currentSymbolToLocation + getLabelToLocation(linesWithoutCurrentLabel)
     }
 
     private fun getLabel(parsedCommand: String): String {
