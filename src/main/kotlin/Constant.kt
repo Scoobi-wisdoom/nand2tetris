@@ -3,6 +3,7 @@ object Constant {
     const val C_INSTRUCTION_PREFIX = "111"
     const val SEMI_COLON = ";"
     const val EQUAL = "="
+    const val SIXTEEN = 16
     private const val ZERO = "0"
     private const val ONE = "1"
 

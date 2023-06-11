@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 
 class ReadAssemblyTest {
     private val readAssembly = ReadAssembly()
@@ -16,5 +17,27 @@ class ReadAssemblyTest {
             )
         )
         assertTrue(result == listOf("D=M"))
+    }
+
+    @Test
+    fun getSymbolToAddress() {
+        val symbolToAddress = readAssembly.getSymbolToAddress(
+            listOf(
+                "@i",
+                "(STOP)",
+                "@i",
+                "D=M",
+                "@R1",
+                "M=D",
+                "(END)",
+                "@END",
+                "0;JMP",
+            )
+        )
+        assertAll(
+            { assertTrue(symbolToAddress["i"] == 16) },
+            { assertTrue(symbolToAddress["STOP"] == 1) },
+            { assertTrue(symbolToAddress["END"] == 6) },
+        )
     }
 }
