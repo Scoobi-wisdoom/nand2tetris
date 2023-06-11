@@ -9,9 +9,18 @@ fun main() {
         readAssembly.parseCommands(lines)
     }
 
+    val fileNameToSymbols = fileNameToCommands.mapValues { (_, lines) ->
+        readAssembly.getSymbolToAddress(lines)
+    }
+
     val convertAssembly = ConvertAssembly()
-    val fileNameToConvertedCommands: Map<String, List<String>> = fileNameToCommands.mapValues { (_, commands) ->
-        commands.map { convertAssembly.convert(it) }
+    val fileNameToConvertedCommands: Map<String, List<String>> = fileNameToCommands.mapValues { (fileName, commands) ->
+        commands.map {
+            convertAssembly.convert(
+                command = it,
+                symbols = fileNameToSymbols[fileName] ?: emptyMap(),
+            )
+        }.filter { it.isNotBlank() }
     }
 
     createFiles(fileNameToConvertedCommands)
