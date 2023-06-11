@@ -10,7 +10,10 @@ import Constant.predefinedSymbols
 class ConvertAssembly {
     private val numericRegex = Regex("\\d+")
 
-    fun convert(command: String): String {
+    fun convert(
+        command: String,
+        symbols: Map<String, Int>,
+    ): String {
         return if (command.startsWith(AT)) {
             // TODO("starting with @ does not mean it is either an address or variable since it could be a label.")
             convertIntoAInstruction(command)
