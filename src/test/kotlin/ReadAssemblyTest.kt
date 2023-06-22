@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 
@@ -20,6 +21,7 @@ class ReadAssemblyTest {
     }
 
     @Test
+    @DisplayName("A command of @Non-number should be considered as a symbol.")
     fun getSymbolToAddress() {
         val symbolToAddress = readAssembly.getSymbolToAddress(
             listOf(
@@ -61,5 +63,22 @@ class ReadAssemblyTest {
             { assertTrue(symbolToAddress["STOP"] == 20) },
             { assertTrue(symbolToAddress["END"] == 24) },
         )
+    }
+
+    @Test
+    @DisplayName("A Command of '@number' should not be regarded as a symbol.")
+    fun getSymbolToAddressWithNumber() {
+        val symbolToAddress = readAssembly.getSymbolToAddress(
+            listOf(
+                "@2",
+                "D=A",
+                "@3",
+                "D=D+A",
+                "@0",
+                "M=D"
+            )
+        )
+
+        assertTrue(symbolToAddress.isEmpty())
     }
 }

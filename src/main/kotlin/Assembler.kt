@@ -4,24 +4,7 @@ fun main() {
     val fileNames = getTargetFileNames()
     val fileNameToLines = fileNames.associateWith { getLines(it) }
 
-    val readAssembly = ReadAssembly()
-    val fileNameToCommands = fileNameToLines.mapValues { (_, lines) ->
-        readAssembly.parseCommands(lines)
-    }
-
-    val fileNameToSymbols = fileNameToCommands.mapValues { (_, lines) ->
-        readAssembly.getSymbolToAddress(lines)
-    }
-
-    val convertAssembly = ConvertAssembly()
-    val fileNameToConvertedCommands: Map<String, List<String>> = fileNameToCommands.mapValues { (fileName, commands) ->
-        commands.map {
-            convertAssembly.convert(
-                command = it,
-                symbols = fileNameToSymbols[fileName] ?: emptyMap(),
-            )
-        }.filter { it.isNotBlank() }
-    }
+    val fileNameToConvertedCommands = ReadConvertIntegrationAssembly().getFileNameToConvertedCommands(fileNameToLines)
 
     createFiles(fileNameToConvertedCommands)
 }
@@ -45,11 +28,11 @@ private fun getLines(fileName: String): List<String> {
 }
 
 private fun createFiles(fileNameToConvertedCommands: Map<String, List<String>>) {
-    fileNameToConvertedCommands.entries.forEach {
+    fileNameToConvertedCommands.entries.forEach { (fileName, content) ->
         createFile(
-            exisingFilePath = it.key,
+            exisingFilePath = fileName,
             newExtension = HACK_EXTENSION,
-            content = it.value,
+            content = content,
         )
     }
 }

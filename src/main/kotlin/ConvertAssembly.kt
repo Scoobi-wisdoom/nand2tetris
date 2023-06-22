@@ -5,11 +5,10 @@ import Constant.SEMI_COLON
 import Constant.computationToBinary
 import Constant.destinationToBinary
 import Constant.jumpToBinary
+import Constant.numericRegex
 import Constant.predefinedSymbols
 
 class ConvertAssembly {
-    private val numericRegex = Regex("\\d+")
-
     fun convert(
         command: String,
         symbols: Map<String, Int>,

@@ -1,5 +1,6 @@
 import Constant.AT
 import Constant.SIXTEEN
+import Constant.numericRegex
 import Constant.predefinedSymbols
 
 class ReadAssembly {
@@ -48,6 +49,9 @@ class ReadAssembly {
     ): Map<String, Int> {
         val variables = lines.filter { parsedCommand ->
             parsedCommand.startsWith(AT) &&
+                    parsedCommand.substringAfter(AT).let {
+                        it != numericRegex.find(it)?.value
+                    } &&
                     parsedCommand.substringAfter(AT) !in predefinedSymbols &&
                     parsedCommand.substringAfter(AT) !in labels
         }.distinct()

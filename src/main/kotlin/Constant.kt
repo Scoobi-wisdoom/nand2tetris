@@ -7,6 +7,8 @@ object Constant {
     private const val ZERO = "0"
     private const val ONE = "1"
 
+    val numericRegex = Regex("\\d+")
+
     val predefinedSymbols = mapOf(
         "KBD" to 24576,
         "SCREEN" to 16384,
