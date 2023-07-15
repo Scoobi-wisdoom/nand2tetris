@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,9 +12,9 @@ public class VMTranslator {
         String fileName = args[0];
         if (!isVmFile(fileName)) return;
 
-        String parsedCommand = getParsedCommand(fileName);
+        List<String> parsedCommands = getParsedCommands(fileName);
 
-        List<String> writtenCodes = getWrittenCodes(parsedCommand);
+        List<String> writtenCodes = getWrittenCodes(parsedCommands);
 
         File outputFile = getOutputFile(fileName);
         try (FileWriter writer = new FileWriter(outputFile)) {
@@ -35,28 +35,26 @@ public class VMTranslator {
 
     private static final String VM_FILE_EXTENSION = ".vm";
 
-    private static String getParsedCommand(String fileName) {
-        String parsedCommand = "";
+    private static List<String> getParsedCommands(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             Parser parser = new Parser();
-            parsedCommand = parser.parse(
-                    reader.lines()
-                            .toList()
-            )
-            ;
+
+            return reader.lines()
+                    .map(parser::parse)
+                    .filter(command -> !command.isBlank())
+                    .collect(Collectors.toList());
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return parsedCommand;
+        return Collections.emptyList();
     }
 
-    private static List<String> getWrittenCodes(String parsedCommand) {
+    private static List<String> getWrittenCodes(List<String> parsedCommands) {
         CodeWriter codeWriter = new CodeWriter();
-        String[] lines = parsedCommand.split("\n");
-        return Arrays.stream(lines)
-                .flatMap(command -> codeWriter.writeCode(command).stream())
+        return parsedCommands.stream()
+                .map(codeWriter::writeCode)
                 .collect(Collectors.toList());
 
     }
