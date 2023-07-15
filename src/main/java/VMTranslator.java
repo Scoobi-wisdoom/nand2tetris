@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,9 +12,9 @@ public class VMTranslator {
         String fileName = args[0];
         if (!isVmFile(fileName)) return;
 
-        List<String> parsedCommands = getParsedCommands(fileName);
+        String parsedCommand = getParsedCommands(fileName);
 
-        List<String> writtenCodes = getWrittenCodes(parsedCommands);
+        List<String> writtenCodes = getWrittenCodes(parsedCommand);
 
         File outputFile = getOutputFile(fileName);
         try (FileWriter writer = new FileWriter(outputFile)) {
@@ -35,24 +35,27 @@ public class VMTranslator {
 
     private static final String VM_FILE_EXTENSION = ".vm";
 
-    private static List<String> getParsedCommands(String fileName) {
+    private static String getParsedCommands(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             Parser parser = new Parser();
 
-            return reader.lines()
-                    .map(parser::parse)
-                    .toList();
+            parser.parse(
+                    reader.lines()
+                            .toList()
+            )
+            ;
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return Collections.emptyList();
+        return "";
     }
 
-    private static List<String> getWrittenCodes(List<String> commands) {
+    private static List<String> getWrittenCodes(String parsedCommand) {
         CodeWriter codeWriter = new CodeWriter();
-        return commands.stream()
+        String[] lines = parsedCommand.split("\n");
+        return Arrays.stream(lines)
                 .flatMap(command -> codeWriter.writeCode(command).stream())
                 .collect(Collectors.toList());
 

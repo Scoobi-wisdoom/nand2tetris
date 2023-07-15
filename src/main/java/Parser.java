@@ -1,5 +1,7 @@
+import java.util.List;
+
 public class Parser {
-    public String parse(String command) {
+    public String parse(List<String> commands) {
         return "";
     }
 }
