@@ -12,7 +12,7 @@ public class VMTranslator {
         String fileName = args[0];
         if (!isVmFile(fileName)) return;
 
-        String parsedCommand = getParsedCommands(fileName);
+        String parsedCommand = getParsedCommand(fileName);
 
         List<String> writtenCodes = getWrittenCodes(parsedCommand);
 
@@ -35,11 +35,11 @@ public class VMTranslator {
 
     private static final String VM_FILE_EXTENSION = ".vm";
 
-    private static String getParsedCommands(String fileName) {
+    private static String getParsedCommand(String fileName) {
+        String parsedCommand = "";
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             Parser parser = new Parser();
-
-            parser.parse(
+            parsedCommand = parser.parse(
                     reader.lines()
                             .toList()
             )
@@ -49,7 +49,7 @@ public class VMTranslator {
             e.printStackTrace();
         }
 
-        return "";
+        return parsedCommand;
     }
 
     private static List<String> getWrittenCodes(String parsedCommand) {
