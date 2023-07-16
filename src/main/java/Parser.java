@@ -1,13 +1,29 @@
+import java.io.FileInputStream;
+
 public class Parser {
-    public String parse(String command) {
-        String trimmedCommand = command.trim();
+    private FileInputStream fileInputStream;
 
-        if (trimmedCommand.startsWith("//") ||
-                trimmedCommand.isBlank()
-        ) {
-            return "";
-        }
+    public Parser(FileInputStream fileInputStream) {
+        this.fileInputStream = fileInputStream;
+    }
 
-        return trimmedCommand;
+    public boolean hasMoreLines() {
+        return false;
+    }
+
+    public void advance() {
+
+    }
+
+    public String commandType() {
+        return "";
+    }
+
+    public String arg1() {
+        return "";
+    }
+
+    public String arg2() {
+        return "";
     }
 }
