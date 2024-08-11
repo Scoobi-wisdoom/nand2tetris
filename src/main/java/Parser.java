@@ -1,55 +1,89 @@
-import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class Parser {
-    private static final int C_ARITHMETIC = 0;
-    private static final int C_PUSH = 1;
-    private static final int C_POP = 2;
-    private static final int C_LABEL = 3;
-    private static final int C_GOTO = 4;
-    private static final int C_IF = 5;
-    private static final int C_FUNCTION = 6;
-    private static final int C_RETURN = 7;
-    private static final int C_CALL = 8;
-    private String currentCommand;
-    private String arg1;
-    private String arg2;
-    private FileInputStream fileInputStream;
+    public static final int C_ARITHMETIC = 0;
+    public static final int C_PUSH = 1;
+    public static final int C_POP = 2;
+    public static final int C_LABEL = 3;
+    public static final int C_GOTO = 4;
+    public static final int C_IF = 5;
+    public static final int C_FUNCTION = 6;
+    public static final int C_RETURN = 7;
+    public static final int C_CALL = 8;
+    private static final ArrayList<String> arithmeticCommands = new ArrayList<>(9);
 
-    public Parser(FileInputStream fileInputStream) {
-        this.fileInputStream = fileInputStream;
+    static {
+        arithmeticCommands.add("add");
+        arithmeticCommands.add("sub");
+        arithmeticCommands.add("neg");
+        arithmeticCommands.add("eq");
+        arithmeticCommands.add("gt");
+        arithmeticCommands.add("lt");
+        arithmeticCommands.add("and");
+        arithmeticCommands.add("or");
+        arithmeticCommands.add("not");
+    }
+
+    private String currentCommand;
+    private final Scanner commands;
+
+    public Parser(InputStream inputStream) {
+        this.commands = new Scanner(inputStream);
     }
 
     public boolean hasMoreLines() {
-        return false;
+        return commands.hasNextLine();
     }
 
     public void advance() {
         if (hasMoreLines()) {
-            currentCommand = "";
-        } else {
-            throw new RuntimeException("there is no next line.");
+            currentCommand = commands.nextLine();
+            int commentIndex = currentCommand.indexOf("//");
+            if (commentIndex != -1) {
+                currentCommand = currentCommand.substring(0, commentIndex);
+            }
+        }
+
+        currentCommand = currentCommand.trim();
+        if (currentCommand.isEmpty()) {
+            advance();
         }
     }
 
     public int commandType() {
-        if (Objects.equals(currentCommand, "C_ARITHMETIC")) {
+        String[] currentCommandSplits = currentCommand.split(" ");
+        if (arithmeticCommands.contains(currentCommandSplits[0])) {
             return C_ARITHMETIC;
-        } else if (Objects.equals(currentCommand, "C_PUSH")) {
+        } else if (Objects.equals(currentCommandSplits[0], "push")) {
             return C_PUSH;
-        } else if (Objects.equals(currentCommand, "C_POP")) {
+        } else if (Objects.equals(currentCommandSplits[0], "pop")) {
             return C_POP;
-        } else if (Objects.equals(currentCommand, "C_LABEL")) {
+        }
+        // TODO("Not yet implemented.")
+        else if (Objects.equals(currentCommandSplits[0], "C_LABEL")) {
             return C_LABEL;
-        } else if (Objects.equals(currentCommand, "C_GOTO")) {
+        }
+        // TODO("Not yet implemented.")
+        else if (Objects.equals(currentCommandSplits[0], "C_GOTO")) {
             return C_GOTO;
-        } else if (Objects.equals(currentCommand, "C_IF")) {
+        }
+        // TODO("Not yet implemented.")
+        else if (Objects.equals(currentCommandSplits[0], "C_IF")) {
             return C_IF;
-        } else if (Objects.equals(currentCommand, "C_FUNCTION")) {
+        }
+        // TODO("Not yet implemented.")
+        else if (Objects.equals(currentCommandSplits[0], "C_FUNCTION")) {
             return C_FUNCTION;
-        } else if (Objects.equals(currentCommand, "C_RETURN")) {
+        }
+        // TODO("Not yet implemented.")
+        else if (Objects.equals(currentCommandSplits[0], "C_RETURN")) {
             return C_RETURN;
-        } else if (Objects.equals(currentCommand, "C_CALL")) {
+        }
+        // TODO("Not yet implemented.")
+        else if (Objects.equals(currentCommandSplits[0], "C_CALL")) {
             return C_CALL;
         } else {
             throw new RuntimeException("Wrong currentCommand: " + currentCommand);
@@ -57,22 +91,24 @@ public class Parser {
     }
 
     public String arg1() {
-        if (commandType() != C_RETURN) {
-            return arg1;
+        if (commandType() == C_RETURN) {
+            throw new RuntimeException("CommandType" + commandType() + "should never call arg1().");
+        } else if (commandType() == C_ARITHMETIC) {
+            return currentCommand;
         } else {
-            throw new RuntimeException("arg1() should never be called");
+            return currentCommand.split(" ")[1];
         }
     }
 
-    public String arg2() {
+    public int arg2() {
         if (commandType() == C_PUSH ||
                 commandType() == C_POP ||
                 commandType() == C_FUNCTION ||
                 commandType() == C_CALL
         ) {
-            return arg2;
+            return Integer.parseInt(currentCommand.split(" ")[2]);
         } else {
-            throw new RuntimeException("arg2() should never be called");
+            throw new RuntimeException("CommandType" + commandType() + "should never call arg2().");
         }
     }
 }
