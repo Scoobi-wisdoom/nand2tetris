@@ -18,7 +18,7 @@ public class VMTranslator {
             throw new RuntimeException(e);
         }
 
-        File outputFile = new File(file.getName().split(VM_FILE_EXTENSION)[0] + ASSEMBLY_FILE_EXTENSION);
+        File outputFile = new File(file.getParent(), file.getName().split(VM_FILE_EXTENSION)[0] + ASSEMBLY_FILE_EXTENSION);
         final CodeWriter codeWriter = new CodeWriter(outputFile);
         while (parser.hasMoreLines()) {
             parser.advance();

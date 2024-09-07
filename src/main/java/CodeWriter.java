@@ -19,9 +19,8 @@ public class CodeWriter {
     };
 
     public CodeWriter(File file) {
-        File outputFile = new File(file.getName());
         try {
-            this.printWriter = new PrintWriter(new FileWriter(outputFile));
+            this.printWriter = new PrintWriter(new FileWriter(file));
             this.fileName = file.getName();
         } catch (IOException e) {
             throw new RuntimeException(e);
