@@ -19,7 +19,7 @@ public class CodeWriter {
     };
 
     public CodeWriter(File file) {
-        File outputFile = new File(file.getAbsolutePath().split(".vm")[0] + ".asm");
+        File outputFile = new File(file.getName());
         try {
             this.printWriter = new PrintWriter(new FileWriter(outputFile));
             this.fileName = file.getName();
