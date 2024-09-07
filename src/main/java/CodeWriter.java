@@ -1,8 +1,11 @@
-import java.io.FileOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 public class CodeWriter {
     private final PrintWriter printWriter;
+    private final String fileName;
     private int labelCount = 0;
     private static final String[] segments = new String[]{
             "constant",
@@ -15,8 +18,14 @@ public class CodeWriter {
             "static",
     };
 
-    public CodeWriter(FileOutputStream fileOutputStream) {
-        this.printWriter = new PrintWriter(fileOutputStream);
+    public CodeWriter(File file) {
+        File outputFile = new File(file.getAbsolutePath().split(".vm")[0] + ".asm");
+        try {
+            this.printWriter = new PrintWriter(new FileWriter(outputFile));
+            this.fileName = file.getName();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void useTwoStacksWithCInstruction(String cInstruction) {
@@ -171,21 +180,11 @@ public class CodeWriter {
 
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop pointer " + index);
-                    printWriter.println("@SP");
-                    printWriter.println("AM=M-1");
-                    printWriter.println("D=M");
-                    printWriter.println(thisOrThat);
-                    printWriter.println("M=D");
+                    popFromAddressOf(thisOrThat);
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push pointer " + index);
-                    printWriter.println(thisOrThat);
-                    printWriter.println("D=M");
-                    printWriter.println("@SP");
-                    printWriter.println("A=M");
-                    printWriter.println("M=D");
-                    printWriter.println("@SP");
-                    printWriter.println("M=M+1");
+                    pushToAddressOf(thisOrThat);
                 }
                 break;
             }
@@ -195,26 +194,81 @@ public class CodeWriter {
                     throw new RuntimeException("temp segment should be between @R5 and @R12, inclusively.");
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop temp " + index);
-                    printWriter.println("@SP");
-                    printWriter.println("AM=M-1");
-                    printWriter.println("D=M");
-                    printWriter.println("@R" + tempAddressIndex);
-                    printWriter.println("M=D");
+                    popFromAddressOf("@R" + tempAddressIndex);
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push temp " + index);
-                    printWriter.println("@R" + tempAddressIndex);
-                    printWriter.println("D=M");
-                    printWriter.println("@SP");
-                    printWriter.println("A=M");
-                    printWriter.println("M=D");
-                    printWriter.println("@SP");
-                    printWriter.println("M=M+1");
+                    pushToAddressOf("@R" + tempAddressIndex);
                 }
+                break;
             }
             case "static": {
+                if (fileName == null) throw new RuntimeException("fileName should not be null.");
+                if (command == Parser.C_POP) {
+                    printWriter.println("// pop static " + index);
+                    popFromAddressOf("@" + fileName + "." + index);
+                }
+                if (command == Parser.C_PUSH) {
+                    printWriter.println("// push static " + index);
+                    pushToAddressOf("@" + fileName + "." + index);
+                }
+                break;
             }
         }
+    }
+
+    private void popFromAddressOf(String segmentBaseAddress, int index) {
+        if (index != 0) {
+            printWriter.println("@" + index);
+            printWriter.println("D=A");
+            printWriter.println(segmentBaseAddress);
+            printWriter.println("D=D+A");
+            printWriter.println("@R13");
+            printWriter.println("M=D");
+            printWriter.println("@SP");
+            printWriter.println("AM=M-1");
+            printWriter.println("D=M");
+            printWriter.println("@R13");
+            printWriter.println("A=M");
+            printWriter.println("M=D");
+        } else {
+            popFromAddressOf(segmentBaseAddress);
+        }
+    }
+
+    private void popFromAddressOf(String address) {
+        printWriter.println("@SP");
+        printWriter.println("AM=M-1");
+        printWriter.println("D=M");
+        printWriter.println(address);
+        printWriter.println("M=D");
+    }
+
+    private void pushToAddressOf(String segmentBaseAddress, int index) {
+        if (index != 0) {
+            printWriter.println("@" + index);
+            printWriter.println("D=A");
+            printWriter.println(segmentBaseAddress);
+            printWriter.println("A=D+A");
+            printWriter.println("D=M");
+            printWriter.println("@SP");
+            printWriter.println("A=M");
+            printWriter.println("M=D");
+            printWriter.println("@SP");
+            printWriter.println("M=M+1");
+        } else {
+            pushToAddressOf(segmentBaseAddress);
+        }
+    }
+
+    private void pushToAddressOf(String address) {
+        printWriter.println(address);
+        printWriter.println("D=M");
+        printWriter.println("@SP");
+        printWriter.println("A=M");
+        printWriter.println("M=D");
+        printWriter.println("@SP");
+        printWriter.println("M=M+1");
     }
 
     private void validate(int command, String segment) {
@@ -232,34 +286,6 @@ public class CodeWriter {
         if (!isValidSegment) {
             throw new RuntimeException("Segment " + segment + " is not valid.");
         }
-    }
-
-    private void pushToAddressOf(String segmentBaseAddress, int index) {
-        printWriter.println("@" + index);
-        printWriter.println("D=A");
-        printWriter.println(segmentBaseAddress);
-        printWriter.println("A=D+A");
-        printWriter.println("D=M");
-        printWriter.println("@SP");
-        printWriter.println("A=M");
-        printWriter.println("M=D");
-        printWriter.println("@SP");
-        printWriter.println("M=M+1");
-    }
-
-    private void popFromAddressOf(String segmentBaseAddress, int index) {
-        printWriter.println("@" + index);
-        printWriter.println("D=A");
-        printWriter.println(segmentBaseAddress);
-        printWriter.println("D=D+A");
-        printWriter.println("@R13");
-        printWriter.println("M=D");
-        printWriter.println("@SP");
-        printWriter.println("AM=M-1");
-        printWriter.println("D=M");
-        printWriter.println("@R13");
-        printWriter.println("A=M");
-        printWriter.println("M=D");
     }
 
     public void close() {
