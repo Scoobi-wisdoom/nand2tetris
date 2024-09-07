@@ -99,66 +99,66 @@ public class CodeWriter {
     public void writePushPop(int command, String segment, int index) {
         validate(command, segment);
 
-        // https://github.com/Scoobi-wisdoom/nand2tetris?tab=readme-ov-file#week-1-1
-        if (segment.equals("constant")) {
-
-        } else if (segment.equals("argument")) {
-            if (command == Parser.C_PUSH) {
-                printWriter.println("// push " + segment + " " + index);
-                printWriter.println("@" + index);
-                printWriter.println("D=A");
-                printWriter.println("@ARG");
-                printWriter.println("A=D+A");
-                printWriter.println("D=M");
-                printWriter.println("@SP");
-                printWriter.println("A=M");
-                printWriter.println("M=D");
-                printWriter.println("@SP");
-                printWriter.println("M=M+1");
-            } else {
-                printWriter.println("// pop " + segment + " " + index);
-                printWriter.println("@" + index);
-                printWriter.println("D=A");
-                printWriter.println("@ARG");
-                printWriter.println("D=D+A");
-                printWriter.println("@R13");
-                printWriter.println("M=D");
-                printWriter.println("@SP");
-                printWriter.println("AM=M-1");
-                printWriter.println("D=M");
-                printWriter.println("@R13");
-                printWriter.println("A=M");
-                printWriter.println("M=D");
+        switch (segment) {
+            case "constant": {
+                if (command == Parser.C_POP)
+                    throw new RuntimeException("constant segment should not be with pop command.");
+                if (command == Parser.C_PUSH) {
+                    printWriter.println("// push constant " + index);
+                    printWriter.println("@" + index);
+                    printWriter.println("D=A");
+                    printWriter.println("@SP");
+                    printWriter.println("A=M");
+                    printWriter.println("M=D");
+                    printWriter.println("@SP");
+                    printWriter.println("M=M+1");
+                }
             }
-        } else if (segment.equals("local")) {
-            if (command == Parser.C_PUSH) {
-            } else {
-
+            case "argument": {
+                if (command == Parser.C_POP) {
+                    printWriter.println("// pop argument " + index);
+                    popFromAddressOf("@ARG", index);
+                }
+                if (command == Parser.C_PUSH) {
+                    printWriter.println("// push argument " + index);
+                    pushToAddressOf("@ARG", index);
+                }
             }
-        } else if (segment.equals("this")) {
-            if (command == Parser.C_PUSH) {
-            } else {
-
+            case "local": {
+                if (command == Parser.C_POP) {
+                    printWriter.println("// pop local " + index);
+                    popFromAddressOf("@LCL", index);
+                }
+                if (command == Parser.C_PUSH) {
+                    printWriter.println("// push local " + index);
+                    pushToAddressOf("@LCL", index);
+                }
             }
-        } else if (segment.equals("that")) {
-            if (command == Parser.C_PUSH) {
-            } else {
-
+            case "this": {
+                if (command == Parser.C_POP) {
+                    printWriter.println("// pop this " + index);
+                    popFromAddressOf("@THIS", index);
+                }
+                if (command == Parser.C_PUSH) {
+                    printWriter.println("// push this " + index);
+                    pushToAddressOf("@THIS", index);
+                }
             }
-        } else if (segment.equals("temp")) {
-            if (command == Parser.C_PUSH) {
-            } else {
-
+            case "that": {
+                if (command == Parser.C_POP) {
+                    printWriter.println("// pop that " + index);
+                    popFromAddressOf("@THAT", index);
+                }
+                if (command == Parser.C_PUSH) {
+                    printWriter.println("// push that " + index);
+                    pushToAddressOf("@THAT", index);
+                }
             }
-        } else if (segment.equals("pointer")) {
-            if (command == Parser.C_PUSH) {
-            } else {
-
+            case "temp": {
             }
-        } else if (segment.equals("static")) {
-            if (command == Parser.C_PUSH) {
-            } else {
-
+            case "pointer": {
+            }
+            case "static": {
             }
         }
     }
@@ -178,6 +178,34 @@ public class CodeWriter {
         if (!isValidSegment) {
             throw new RuntimeException("Segment " + segment + " is not valid.");
         }
+    }
+
+    private void pushToAddressOf(String segmentBaseAddress, int index) {
+        printWriter.println("@" + index);
+        printWriter.println("D=A");
+        printWriter.println(segmentBaseAddress);
+        printWriter.println("A=D+A");
+        printWriter.println("D=M");
+        printWriter.println("@SP");
+        printWriter.println("A=M");
+        printWriter.println("M=D");
+        printWriter.println("@SP");
+        printWriter.println("M=M+1");
+    }
+
+    private void popFromAddressOf(String segmentBaseAddress, int index) {
+        printWriter.println("@" + index);
+        printWriter.println("D=A");
+        printWriter.println(segmentBaseAddress);
+        printWriter.println("D=D+A");
+        printWriter.println("@R13");
+        printWriter.println("M=D");
+        printWriter.println("@SP");
+        printWriter.println("AM=M-1");
+        printWriter.println("D=M");
+        printWriter.println("@R13");
+        printWriter.println("A=M");
+        printWriter.println("M=D");
     }
 
     public void close() {
