@@ -137,9 +137,13 @@ The translator should meet two objectives: first, the translated code should be 
 
 Stack machine works with memory segments using `pop` and `push`. The purpose of memory segments is to preserve role semantics of variables in high-level code. There are eight memoery segments such as *argument*, *local*, *static*, *constant*, *this*, *that*, *pointer*, and *temp*. Notice that there is no symbolic variables here. VM only knows references not symbolic variables.
 
-Among memory segemnts, *argument*, *local*, *this*, and *that* have its pointer which contains the base address of its segment. *Constant* segment only exists virtually, in other words, it does not occupy any physical RAM space. *Static* segment is also different from other segments since it is handled as symbolic variables. *Temp* segment is for compiler's own use. *Pointer* segment is to track down *this* and *that* base addresses.   
+Among memory segments, *argument*, *local*, *this*, and *that* have its pointer which contains the base address of its segment. *Constant* segment only exists virtually, in other words, it does not occupy any physical RAM space. *Static* segment is also different from other segments since it is handled as symbolic variables. *Temp* segment is for compiler's own use. *Pointer* segment is to track down *this* and *that* base addresses.   
 
 Stack machine necessarily has garbage on its stack memory which should be recycled. Except the garbage, all other stack memory addresses are inplay.
+
+# projects done in different repositories
+- [assembler](https://github.com/Scoobi-wisdoom/assembler)
+- [VMTranslator](https://github.com/Scoobi-wisdoom/VMTranslator)
 
 # References
 -  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
