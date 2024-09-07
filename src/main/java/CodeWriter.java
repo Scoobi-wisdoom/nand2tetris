@@ -169,7 +169,7 @@ public class CodeWriter {
                 break;
             }
             case "pointer": {
-                String thisOrThat;
+                final String thisOrThat;
                 if (index == 0) {
                     thisOrThat = "@THIS";
                 } else if (index == 1) {
