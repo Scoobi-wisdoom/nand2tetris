@@ -1,3 +1,5 @@
+This project is, as [a part of Nand2Tetris](https://github.com/Scoobi-wisdoom/nand2tetris), to convert byte codes into assembly codes.
+
 # References
 ## Memory Initial Value
 - https://www.quora.com/A-memory-byte-is-never-empty-but-its-initial-content-may-be-meaningless-to-your-program-What-does-this-mean
