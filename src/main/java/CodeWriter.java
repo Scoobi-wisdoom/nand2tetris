@@ -113,6 +113,7 @@ public class CodeWriter {
                     printWriter.println("@SP");
                     printWriter.println("M=M+1");
                 }
+                break;
             }
             case "argument": {
                 if (command == Parser.C_POP) {
@@ -123,6 +124,7 @@ public class CodeWriter {
                     printWriter.println("// push argument " + index);
                     pushToAddressOf("@ARG", index);
                 }
+                break;
             }
             case "local": {
                 if (command == Parser.C_POP) {
@@ -133,6 +135,7 @@ public class CodeWriter {
                     printWriter.println("// push local " + index);
                     pushToAddressOf("@LCL", index);
                 }
+                break;
             }
             case "this": {
                 if (command == Parser.C_POP) {
@@ -143,6 +146,7 @@ public class CodeWriter {
                     printWriter.println("// push this " + index);
                     pushToAddressOf("@THIS", index);
                 }
+                break;
             }
             case "that": {
                 if (command == Parser.C_POP) {
@@ -153,10 +157,60 @@ public class CodeWriter {
                     printWriter.println("// push that " + index);
                     pushToAddressOf("@THAT", index);
                 }
-            }
-            case "temp": {
+                break;
             }
             case "pointer": {
+                String thisOrThat;
+                if (index == 0) {
+                    thisOrThat = "@THIS";
+                } else if (index == 1) {
+                    thisOrThat = "@THAT";
+                } else {
+                    throw new RuntimeException("pointer segment is only compatible with 0 or 1 index.");
+                }
+
+                if (command == Parser.C_POP) {
+                    printWriter.println("// pop pointer " + index);
+                    printWriter.println("@SP");
+                    printWriter.println("AM=M-1");
+                    printWriter.println("D=M");
+                    printWriter.println(thisOrThat);
+                    printWriter.println("M=D");
+                }
+                if (command == Parser.C_PUSH) {
+                    printWriter.println("// push pointer " + index);
+                    printWriter.println(thisOrThat);
+                    printWriter.println("D=M");
+                    printWriter.println("@SP");
+                    printWriter.println("A=M");
+                    printWriter.println("M=D");
+                    printWriter.println("@SP");
+                    printWriter.println("M=M+1");
+                }
+                break;
+            }
+            case "temp": {
+                int tempAddressIndex = index + 5;
+                if (index < 5 || index > 12)
+                    throw new RuntimeException("temp segment should be between @R5 and @R12, inclusively.");
+                if (command == Parser.C_POP) {
+                    printWriter.println("// pop temp " + index);
+                    printWriter.println("@SP");
+                    printWriter.println("AM=M-1");
+                    printWriter.println("D=M");
+                    printWriter.println("@R" + tempAddressIndex);
+                    printWriter.println("M=D");
+                }
+                if (command == Parser.C_PUSH) {
+                    printWriter.println("// push temp " + index);
+                    printWriter.println("@R" + tempAddressIndex);
+                    printWriter.println("D=M");
+                    printWriter.println("@SP");
+                    printWriter.println("A=M");
+                    printWriter.println("M=D");
+                    printWriter.println("@SP");
+                    printWriter.println("M=M+1");
+                }
             }
             case "static": {
             }
