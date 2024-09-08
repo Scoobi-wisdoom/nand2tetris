@@ -249,7 +249,7 @@ public class CodeWriter {
             printWriter.println("@" + index);
             printWriter.println("D=A");
             printWriter.println(segmentBaseAddress);
-            printWriter.println("A=D+A");
+            printWriter.println("A=D+M");
             printWriter.println("D=M");
             printWriter.println("@SP");
             printWriter.println("A=M");
