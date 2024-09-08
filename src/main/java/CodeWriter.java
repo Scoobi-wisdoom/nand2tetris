@@ -263,6 +263,7 @@ public class CodeWriter {
 
     private void pushToAddressOf(String address) {
         printWriter.println(address);
+        printWriter.println("A=M");
         printWriter.println("D=M");
         printWriter.println("@SP");
         printWriter.println("A=M");
