@@ -221,7 +221,7 @@ public class CodeWriter {
             printWriter.println("@" + index);
             printWriter.println("D=A");
             printWriter.println(segmentBaseAddress);
-            printWriter.println("D=D+A");
+            printWriter.println("D=D+M");
             printWriter.println("@R13");
             printWriter.println("M=D");
             printWriter.println("@SP");
