@@ -240,6 +240,7 @@ public class CodeWriter {
         printWriter.println("AM=M-1");
         printWriter.println("D=M");
         printWriter.println(address);
+        printWriter.println("A=M");
         printWriter.println("M=D");
     }
 
