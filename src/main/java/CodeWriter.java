@@ -193,7 +193,11 @@ public class CodeWriter {
                     throw new RuntimeException("temp segment should be between @R5 and @R12, inclusively.");
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop temp " + index);
-                    popFromAddressOf("@R" + tempAddressIndex);
+                    printWriter.println("@SP");
+                    printWriter.println("AM=M-1");
+                    printWriter.println("D=M");
+                    printWriter.println("@R" + tempAddressIndex);
+                    printWriter.println("M=D");
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push temp " + index);
