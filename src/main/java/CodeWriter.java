@@ -179,11 +179,21 @@ public class CodeWriter {
 
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop pointer " + index);
-                    popFromAddressOf(thisOrThat);
+                    printWriter.println("@SP");
+                    printWriter.println("AM=M-1");
+                    printWriter.println("D=M");
+                    printWriter.println(thisOrThat);
+                    printWriter.println("M=D");
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push pointer " + index);
-                    pushToAddressOf(thisOrThat);
+                    printWriter.println(thisOrThat);
+                    printWriter.println("D=M");
+                    printWriter.println("@SP");
+                    printWriter.println("A=M");
+                    printWriter.println("M=D");
+                    printWriter.println("@SP");
+                    printWriter.println("M=M+1");
                 }
                 break;
             }
