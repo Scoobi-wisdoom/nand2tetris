@@ -201,7 +201,13 @@ public class CodeWriter {
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push temp " + index);
-                    pushToAddressOf("@R" + tempAddressIndex);
+                    printWriter.println("@R" + tempAddressIndex);
+                    printWriter.println("D=M");
+                    printWriter.println("@SP");
+                    printWriter.println("A=M");
+                    printWriter.println("M=D");
+                    printWriter.println("@SP");
+                    printWriter.println("M=M+1");
                 }
                 break;
             }
