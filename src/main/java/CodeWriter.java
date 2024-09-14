@@ -267,17 +267,13 @@ public class CodeWriter {
             printWriter.println("A=M");
             printWriter.println("M=D");
         } else {
-            popToAddressOf(segmentBaseAddress);
+            printWriter.println("@SP");
+            printWriter.println("AM=M-1");
+            printWriter.println("D=M");
+            printWriter.println(segmentBaseAddress);
+            printWriter.println("A=M");
+            printWriter.println("M=D");
         }
-    }
-
-    private void popToAddressOf(String address) {
-        printWriter.println("@SP");
-        printWriter.println("AM=M-1");
-        printWriter.println("D=M");
-        printWriter.println(address);
-        printWriter.println("A=M");
-        printWriter.println("M=D");
     }
 
     private void pushFromAddressOf(String segmentBaseAddress, int index) {
@@ -293,19 +289,15 @@ public class CodeWriter {
             printWriter.println("@SP");
             printWriter.println("M=M+1");
         } else {
-            pushFromAddressOf(segmentBaseAddress);
+            printWriter.println(segmentBaseAddress);
+            printWriter.println("A=M");
+            printWriter.println("D=M");
+            printWriter.println("@SP");
+            printWriter.println("A=M");
+            printWriter.println("M=D");
+            printWriter.println("@SP");
+            printWriter.println("M=M+1");
         }
-    }
-
-    private void pushFromAddressOf(String address) {
-        printWriter.println(address);
-        printWriter.println("A=M");
-        printWriter.println("D=M");
-        printWriter.println("@SP");
-        printWriter.println("A=M");
-        printWriter.println("M=D");
-        printWriter.println("@SP");
-        printWriter.println("M=M+1");
     }
 
     private void validate(int command, String segment) {
