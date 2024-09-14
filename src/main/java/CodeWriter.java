@@ -126,44 +126,44 @@ public class CodeWriter {
             case "argument": {
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop argument " + index);
-                    popFromAddressOf("@ARG", index);
+                    popToAddressOf("@ARG", index);
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push argument " + index);
-                    pushToAddressOf("@ARG", index);
+                    pushFromAddressOf("@ARG", index);
                 }
                 break;
             }
             case "local": {
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop local " + index);
-                    popFromAddressOf("@LCL", index);
+                    popToAddressOf("@LCL", index);
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push local " + index);
-                    pushToAddressOf("@LCL", index);
+                    pushFromAddressOf("@LCL", index);
                 }
                 break;
             }
             case "this": {
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop this " + index);
-                    popFromAddressOf("@THIS", index);
+                    popToAddressOf("@THIS", index);
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push this " + index);
-                    pushToAddressOf("@THIS", index);
+                    pushFromAddressOf("@THIS", index);
                 }
                 break;
             }
             case "that": {
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop that " + index);
-                    popFromAddressOf("@THAT", index);
+                    popToAddressOf("@THAT", index);
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push that " + index);
-                    pushToAddressOf("@THAT", index);
+                    pushFromAddressOf("@THAT", index);
                 }
                 break;
             }
@@ -221,22 +221,38 @@ public class CodeWriter {
                 }
                 break;
             }
+            // static 의 base 가 16 임을 캐치해야 풀 수 있는 문제.
             case "static": {
                 if (fileName == null) throw new RuntimeException("fileName should not be null.");
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop static " + index);
-                    popFromAddressOf("@" + fileName + "." + index);
+                    printWriter.println("@" + (16 + index));
+                    printWriter.println("D=A");
+                    printWriter.println("@R13");
+                    printWriter.println("M=D");
+                    printWriter.println("@SP");
+                    printWriter.println("AM=M-1");
+                    printWriter.println("D=M");
+                    printWriter.println("@R13");
+                    printWriter.println("A=M");
+                    printWriter.println("M=D");
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push static " + index);
-                    pushToAddressOf("@" + fileName + "." + index);
+                    printWriter.println("@" + (16 + index));
+                    printWriter.println("D=M");
+                    printWriter.println("@SP");
+                    printWriter.println("A=M");
+                    printWriter.println("M=D");
+                    printWriter.println("@SP");
+                    printWriter.println("M=M+1");
                 }
                 break;
             }
         }
     }
 
-    private void popFromAddressOf(String segmentBaseAddress, int index) {
+    private void popToAddressOf(String segmentBaseAddress, int index) {
         if (index != 0) {
             printWriter.println("@" + index);
             printWriter.println("D=A");
@@ -251,11 +267,11 @@ public class CodeWriter {
             printWriter.println("A=M");
             printWriter.println("M=D");
         } else {
-            popFromAddressOf(segmentBaseAddress);
+            popToAddressOf(segmentBaseAddress);
         }
     }
 
-    private void popFromAddressOf(String address) {
+    private void popToAddressOf(String address) {
         printWriter.println("@SP");
         printWriter.println("AM=M-1");
         printWriter.println("D=M");
@@ -264,7 +280,7 @@ public class CodeWriter {
         printWriter.println("M=D");
     }
 
-    private void pushToAddressOf(String segmentBaseAddress, int index) {
+    private void pushFromAddressOf(String segmentBaseAddress, int index) {
         if (index != 0) {
             printWriter.println("@" + index);
             printWriter.println("D=A");
@@ -277,11 +293,11 @@ public class CodeWriter {
             printWriter.println("@SP");
             printWriter.println("M=M+1");
         } else {
-            pushToAddressOf(segmentBaseAddress);
+            pushFromAddressOf(segmentBaseAddress);
         }
     }
 
-    private void pushToAddressOf(String address) {
+    private void pushFromAddressOf(String address) {
         printWriter.println(address);
         printWriter.println("A=M");
         printWriter.println("D=M");
