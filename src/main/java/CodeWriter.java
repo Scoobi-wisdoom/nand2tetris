@@ -31,21 +31,23 @@ public class CodeWriter {
         printWriter.println("@SP");
         printWriter.println("AM=M-1");
         printWriter.println("D=M");
-        printWriter.println("A=A-1");
-        printWriter.println("M=D-M");
-        printWriter.println("@TRUE" + labelCount);
-        printWriter.println(cInstruction);
         printWriter.println("@SP");
         printWriter.println("A=M-1");
+        printWriter.println("D=M-D");
+        printWriter.println("@TRUE" + labelCount);
+        printWriter.println(cInstruction);
         // https://www.quora.com/A-memory-byte-is-never-empty-but-its-initial-content-may-be-meaningless-to-your-program-What-does-this-mean
         // https://softwareengineering.stackexchange.com/questions/53272/the-default-state-of-unused-memory
-        printWriter.println("M=-1");
+        printWriter.println("@SP");
+        printWriter.println("A=M-1");
+        printWriter.println("M=0");
         printWriter.println("@END" + labelCount);
         printWriter.println("0;JMP");
         printWriter.println("(TRUE" + labelCount + ")");
         printWriter.println("@SP");
         printWriter.println("A=M-1");
-        printWriter.println("M=1");
+        // true 가 1 이 아니라 -1 이라는 것을 알아야 풀 수 있는 문제.
+        printWriter.println("M=-1");
         printWriter.println("(END" + labelCount + ")");
         labelCount++;
     }
