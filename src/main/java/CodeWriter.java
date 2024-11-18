@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 public class CodeWriter {
     private final PrintWriter printWriter;
-    private final String fileName;
+    private String fileName = "";
     private int labelCount = 0;
     private static final String[] segments = new String[]{
             "constant",
@@ -21,10 +21,13 @@ public class CodeWriter {
     public CodeWriter(File file) {
         try {
             this.printWriter = new PrintWriter(new FileWriter(file));
-            this.fileName = file.getName();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     private void useTwoStacksWithCInstruction(String cInstruction) {
@@ -317,6 +320,20 @@ public class CodeWriter {
         if (!isValidSegment) {
             throw new RuntimeException("Segment " + segment + " is not valid.");
         }
+    }
+
+    public void writeLabel(String label) {
+        printWriter.println("(" + label + ")");
+    }
+
+    public void writeGoTo(String label) {
+        printWriter.println("@" + label);
+        printWriter.println("0;JMP");
+    }
+
+    public void writeIf(String label) {
+        printWriter.println("@" + label);
+        printWriter.println("D;JNE");
     }
 
     public void close() {
