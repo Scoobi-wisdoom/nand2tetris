@@ -7,6 +7,7 @@ public class CodeWriter {
     private final PrintWriter printWriter;
     private String fileName = "";
     private int labelCount = 0;
+    private int returnCount = 0;
     private static final String[] segments = new String[]{
             "constant",
             "argument",
@@ -334,6 +335,50 @@ public class CodeWriter {
     public void writeIf(String label) {
         printWriter.println("@" + label);
         printWriter.println("D;JNE");
+    }
+
+    // Caller frame pointer values 저장 후에 callee 의 ARG 와 LCL 이 할당됨을 알아야 풀 수 있는 문제.
+    public void writeCall(String functionName, int nArgs) {
+        printWriter.println("// Write call" + functionName);
+        printWriter.println("// Save frame of the caller");
+        printWriter.println("@RETURN" + returnCount);
+        printWriter.println("D=A");
+        printWriter.println("@SP");
+        printWriter.println("A=M");
+        printWriter.println("M=D");
+        printWriter.println("@SP");
+        printWriter.println("M=M+1");
+        pushPointerValueOf("@LCL");
+        pushPointerValueOf("@ARG");
+        pushPointerValueOf("@THIS");
+        pushPointerValueOf("@THAT");
+
+        printWriter.println("// Allocate LCL and ARG memory segments of the callee");
+        int callerFrameCount = 5;
+        printWriter.println("@SP");
+        printWriter.println("D=M");
+        printWriter.println("@" + callerFrameCount);
+        printWriter.println("D=D-A");
+        printWriter.println("@" + nArgs);
+        printWriter.println("D=D-A");
+        printWriter.println("@ARG");
+        printWriter.println("M=D");
+        printWriter.println("@SP");
+        printWriter.println("D=M");
+        printWriter.println("@LCL");
+        printWriter.println("M=D");
+        writeGoTo(functionName);
+        writeLabel("RETURN" + returnCount++);
+    }
+
+    private void pushPointerValueOf(String pointer) {
+        printWriter.println(pointer);
+        printWriter.println("D=M");
+        printWriter.println("@SP");
+        printWriter.println("A=M");
+        printWriter.println("M=D");
+        printWriter.println("@SP");
+        printWriter.println("M=M+1");
     }
 
     public void close() {
