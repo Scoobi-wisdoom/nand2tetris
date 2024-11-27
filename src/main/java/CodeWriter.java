@@ -351,7 +351,7 @@ public class CodeWriter {
     public void writeCall(String functionName, int nArgs) {
         printWriter.println("// Write call" + functionName);
         printWriter.println("// Save frame of the caller");
-        printWriter.println("@RETURN" + returnCount);
+        printWriter.println(functionName + "$ret." + returnCount);
         printWriter.println("D=A");
         printWriter.println("@SP");
         printWriter.println("A=M");
@@ -378,7 +378,7 @@ public class CodeWriter {
         printWriter.println("@LCL");
         printWriter.println("M=D");
         writeGoTo(functionName);
-        writeLabel("RETURN" + returnCount++);
+        writeLabel(functionName + "$ret." + returnCount++);
     }
 
     private void pushPointerValueOf(String pointer) {
