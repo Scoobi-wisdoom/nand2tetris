@@ -337,6 +337,16 @@ public class CodeWriter {
         printWriter.println("D;JNE");
     }
 
+    // writeFunction 에 필요한 것은 label 선언과 constant 지정뿐이라는 것을 알아야 풀 있는 문제
+    // return 도 필요하지 않다는 것은 놀랍다.
+    public void writeFunction(String functionName, int nVars) {
+        printWriter.println("// Write function" + functionName);
+        writeLabel(functionName);
+        for (int i = 0; i < nVars; i++) {
+            writePushPop(Parser.C_PUSH, "constant", i);
+        }
+    }
+
     // Caller frame pointer values 저장 후에 callee 의 ARG 와 LCL 이 할당됨을 알아야 풀 수 있는 문제.
     public void writeCall(String functionName, int nArgs) {
         printWriter.println("// Write call" + functionName);
