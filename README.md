@@ -1,5 +1,23 @@
 This project is, as [a part of Nand2Tetris](https://github.com/Scoobi-wisdoom/nand2tetris), to convert byte codes into assembly codes.
 
+Below is a paraphrased drawing from the textbook Figure 8.3. This figure explains how stack looks like right after a function is called. 
+```text
++--------------------+
+|    arg - callee    |
++--------------------+
+|   return address   |
++--------------------+
+| LCL  pointer value |
++--------------------+
+| ARG  pointer value |
++--------------------+
+| THIS pointer value |
++--------------------+
+| THAT pointer value |
++--------------------+
+|    lcl - callee    |
++--------------------+
+```
 You could use this project as a jar file as following:    
 - create a runnable jar file
 ```console
