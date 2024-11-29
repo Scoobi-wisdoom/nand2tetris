@@ -32,6 +32,15 @@ public class CodeWriter {
         this.fileName = fileName;
     }
 
+    public void init() {
+        // "The standard VM mapping on the Hack platform stipulates that the stack be mapped on the host RAM from address 256 onward ..."
+        printWriter.println("@256");
+        printWriter.println("D=A");
+        printWriter.println("@SP");
+        printWriter.println("M=D");
+        writeCall("Sys.init", 0);
+    }
+
     private void useTwoStacksWithCInstruction(String cInstruction) {
         printWriter.println("@SP");
         printWriter.println("AM=M-1");
