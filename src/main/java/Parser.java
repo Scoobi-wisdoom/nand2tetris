@@ -62,27 +62,21 @@ public class Parser {
         } else if (Objects.equals(currentCommandSplits[0], "pop")) {
             return C_POP;
         }
-        // TODO("Not yet implemented.")
         else if (Objects.equals(currentCommandSplits[0], "C_LABEL")) {
             return C_LABEL;
         }
-        // TODO("Not yet implemented.")
         else if (Objects.equals(currentCommandSplits[0], "C_GOTO")) {
             return C_GOTO;
         }
-        // TODO("Not yet implemented.")
         else if (Objects.equals(currentCommandSplits[0], "C_IF")) {
             return C_IF;
         }
-        // TODO("Not yet implemented.")
         else if (Objects.equals(currentCommandSplits[0], "C_FUNCTION")) {
             return C_FUNCTION;
         }
-        // TODO("Not yet implemented.")
         else if (Objects.equals(currentCommandSplits[0], "C_RETURN")) {
             return C_RETURN;
         }
-        // TODO("Not yet implemented.")
         else if (Objects.equals(currentCommandSplits[0], "C_CALL")) {
             return C_CALL;
         } else {
