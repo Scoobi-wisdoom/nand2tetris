@@ -62,22 +62,22 @@ public class Parser {
         } else if (Objects.equals(currentCommandSplits[0], "pop")) {
             return C_POP;
         }
-        else if (Objects.equals(currentCommandSplits[0], "C_LABEL")) {
+        else if (Objects.equals(currentCommandSplits[0], "label")) {
             return C_LABEL;
         }
-        else if (Objects.equals(currentCommandSplits[0], "C_GOTO")) {
+        else if (Objects.equals(currentCommandSplits[0], "goto")) {
             return C_GOTO;
         }
-        else if (Objects.equals(currentCommandSplits[0], "C_IF")) {
+        else if (Objects.equals(currentCommandSplits[0], "if-goto")) {
             return C_IF;
         }
-        else if (Objects.equals(currentCommandSplits[0], "C_FUNCTION")) {
+        else if (Objects.equals(currentCommandSplits[0], "function")) {
             return C_FUNCTION;
         }
-        else if (Objects.equals(currentCommandSplits[0], "C_RETURN")) {
+        else if (Objects.equals(currentCommandSplits[0], "return")) {
             return C_RETURN;
         }
-        else if (Objects.equals(currentCommandSplits[0], "C_CALL")) {
+        else if (Objects.equals(currentCommandSplits[0], "call")) {
             return C_CALL;
         } else {
             throw new RuntimeException("Wrong currentCommand: " + currentCommand);
