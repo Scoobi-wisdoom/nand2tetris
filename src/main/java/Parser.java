@@ -86,7 +86,7 @@ public class Parser {
 
     public String arg1() {
         if (commandType() == C_RETURN) {
-            throw new RuntimeException("CommandType" + commandType() + "should never call arg1().");
+            throw new RuntimeException("CommandType " + commandType() + "should never call arg1().");
         } else if (commandType() == C_ARITHMETIC) {
             return currentCommand;
         } else {
