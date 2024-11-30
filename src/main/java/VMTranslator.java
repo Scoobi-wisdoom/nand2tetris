@@ -12,7 +12,6 @@ public class VMTranslator {
         final File file = new File(path);
         if (!file.exists()) throw new RuntimeException("File does not exist: " + path);
 
-        final String fileName = file.getName();
         final ArrayList<File> vmFiles = new ArrayList<>();
         final CodeWriter codeWriter;
         if (file.isDirectory()) {
@@ -20,16 +19,18 @@ public class VMTranslator {
                 if (f.getName().endsWith(VM_FILE_EXTENSION)) vmFiles.add(f);
             }
 
-            codeWriter = new CodeWriter(new File(fileName));
-            codeWriter.setFileName(fileName + ASSEMBLY_FILE_EXTENSION);
+            File outputFile = new File(file.getParent() + "/" + file.getName() + ASSEMBLY_FILE_EXTENSION);
+            codeWriter = new CodeWriter(outputFile);
+            codeWriter.setFileName(outputFile.getName());
         } else if (file.isFile()) {
+            final String fileName = file.getName();
             if (!fileName.endsWith(VM_FILE_EXTENSION)) throw new RuntimeException("Invalid file name: " + fileName);
             vmFiles.add(file);
-            File outputFile = new File(file.getParent());
+            File outputFile = new File(fileName.split(VM_FILE_EXTENSION)[0] + ASSEMBLY_FILE_EXTENSION);
             codeWriter = new CodeWriter(outputFile);
-            codeWriter.setFileName(fileName.split(VM_FILE_EXTENSION)[0] + ASSEMBLY_FILE_EXTENSION);
+            codeWriter.setFileName(outputFile.getName());
         } else {
-            throw new RuntimeException("Invalid file name: " + fileName);
+            throw new RuntimeException("Invalid file name: " + file.getName());
         }
 
         // "... and that the first VM function that should start executing is the OS function Sys.init."
