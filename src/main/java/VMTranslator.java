@@ -19,7 +19,7 @@ public class VMTranslator {
                 if (f.getName().endsWith(VM_FILE_EXTENSION)) vmFiles.add(f);
             }
 
-            File outputFile = new File(file.getParent() + "/" + file.getName() + ASSEMBLY_FILE_EXTENSION);
+            File outputFile = new File(file.getAbsolutePath() + "/" + file.getName() + ASSEMBLY_FILE_EXTENSION);
             codeWriter = new CodeWriter(outputFile);
             codeWriter.setFileName(outputFile.getName());
         } else if (file.isFile()) {
