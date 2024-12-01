@@ -102,7 +102,7 @@ public class Parser {
         ) {
             return Integer.parseInt(currentCommand.split(" ")[2]);
         } else {
-            throw new RuntimeException("CommandType" + commandType() + "should never call arg2().");
+            throw new RuntimeException("CommandType " + commandType() + "should never call arg2().");
         }
     }
 }
