@@ -33,6 +33,7 @@ public class CodeWriter {
     }
 
     public void init() {
+        printWriter.println("// init");
         // "The standard VM mapping on the Hack platform stipulates that the stack be mapped on the host RAM from address 256 onward ..."
         printWriter.println("@256");
         printWriter.println("D=A");
