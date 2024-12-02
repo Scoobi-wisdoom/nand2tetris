@@ -26,7 +26,7 @@ public class VMTranslator {
             final String fileName = file.getName();
             if (!fileName.endsWith(VM_FILE_EXTENSION)) throw new RuntimeException("Invalid file name: " + fileName);
             vmFiles.add(file);
-            File outputFile = new File(fileName.split(VM_FILE_EXTENSION)[0] + ASSEMBLY_FILE_EXTENSION);
+            File outputFile = new File(file.getParent() + "/" + fileName.split(VM_FILE_EXTENSION)[0] + ASSEMBLY_FILE_EXTENSION);
             codeWriter = new CodeWriter(outputFile);
             codeWriter.setFileName(outputFile.getName());
         } else {
