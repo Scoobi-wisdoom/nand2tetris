@@ -217,7 +217,7 @@ public class CodeWriter {
             }
             case "temp": {
                 int tempAddressIndex = index + 5;
-                if (index < 5 || index > 12)
+                if (tempAddressIndex < 5 || tempAddressIndex > 12)
                     throw new RuntimeException("temp segment should be between @R5 and @R12, inclusively.");
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop temp " + index);
