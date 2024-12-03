@@ -344,6 +344,10 @@ public class CodeWriter {
     }
 
     public void writeIf(String label) {
+        printWriter.println("// write if-goto");
+        printWriter.println("@SP");
+        printWriter.println("AM=M-1");
+        printWriter.println("D=M");
         printWriter.println("@" + label);
         printWriter.println("D;JNE");
     }
