@@ -9,6 +9,7 @@ public class CodeWriter {
     private int labelCount = 0;
     private int returnCount = 0;
     private final int callerFrameCount = 5;
+    private final String R_14 = "R14";
     private static final String[] segments = new String[]{
             "constant",
             "argument",
@@ -421,15 +422,18 @@ public class CodeWriter {
         // function 의 반환값을 제외하고 모든 stack 을 function 호출 전 상태로 복구하려면 ARG 이후로 모두 없애야 하는 것을 알아야 풀 수 있는 문제.
         // 이해를 돕기 위한 그림: README.md.
         printWriter.println("@ARG");
-        // 왜 ARG 다음에 SP를 놓을까? -> ARG 가 있던 위치에 function return value 를 대신 위치시켜야 하기 때문이다.
-        printWriter.println("D=M+1");
-        printWriter.println("@SP");
+        printWriter.println("A=M");
         printWriter.println("M=D");
+        // 왜 ARG 다음에 SP를 놓을까? -> ARG 가 있던 위치에 function return value 를 대신 위치시켜야 하기 때문이다.
+        printWriter.println("@ARG");
+        printWriter.println("D=M");
+        printWriter.println("@SP");
+        printWriter.println("M=D+1");
 
         // LCL 의 위치를 통해 frames 의 위치를 구한다는 것을 알아야 풀 수 있는 문제
         printWriter.println("@LCL");
         printWriter.println("D=M");
-        printWriter.println("@R14");
+        printWriter.println("@" + R_14);
         printWriter.println("M=D");
         printWriter.println("@" + callerFrameCount);
         printWriter.println("A=D-A");
@@ -469,7 +473,7 @@ public class CodeWriter {
             default:
                 throw new RuntimeException("A frame name of LCL, ARG, THIS or THAT expected but found: " + frameName);
         }
-        printWriter.println("@R14");
+        printWriter.println("@" + R_14);
         printWriter.println("D=M");
         printWriter.println("@" + distanceFromLCL);
         printWriter.println("A=D-A");
