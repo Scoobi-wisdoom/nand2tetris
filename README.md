@@ -8,7 +8,8 @@ project 2: ALU.hdl
 project 3: Bit.hdl, RAM8.hdl, PC.hdl  
 project 4: Fill.asm  
 project 5: CPU.hdl   
-project 7
+project 7: StaticTest.vm   
+project 8: FunctionCalls/StaticsTest FunctionCalls/NestedCall  
 # Part 1
 ## Week 1
 Computer systems are about abstractions and implementations.
@@ -129,7 +130,7 @@ Assembler symbols except predefined ones, i.e. labels and variables, must be rep
 
 The assembler does not generate binary code for label declarations in an instruction. So the labels are also called *pseudo-instructions*.
 # Part 2
-# Week 1
+## Week 1
 A compiler converts high-level program into low-level code. The problem is that there are too many types of computers or devices in which the same high-level program have different low-level code. This problem is solved by a principle "write once run anywhere." According to this principle, a compiler generates VM code to run on an abstract virtual machine and this VM code is translated (compiled further) into a machine language. 
 
 Java is a good example of this principle. Java compiler makes Java bytecode (i.e. VM code) from Java program. Then a JVM implementation known as JRE (i.e. translator) converts VM code into machine language suitable to the computer or device. Of course, however, at some point the VM abstraction must be implemented on a specific hardware platform. For this, there are implementation guidelines published by VM architects which are called as *standard mappings*.
@@ -141,6 +142,24 @@ Stack machine works with memory segments using `pop` and `push`. The purpose of 
 Among memory segments, *argument*, *local*, *this*, and *that* have its pointer which contains the base address of its segment. *Constant* segment only exists virtually, in other words, it does not occupy any physical RAM space. *Static* segment is also different from other segments since it is handled as symbolic variables. *Temp* segment is for compiler's own use. *Pointer* segment is to track down *this* and *that* base addresses.   
 
 Stack machine necessarily has garbage on its stack memory which should be recycled. Except the garbage, all other stack memory addresses are inplay.
+
+## Week 2
+In the VM language, the form of function declaration is `function functionName n` where `n` stands for the number of local variables of this fucntion. A function is also called as a subroutine, procedure or method.   
+
+In the current program, all functions involved are called *calling chain*, among which active one is referred to as a current function. Each function has its own stack and memory segments. To preserve states of it among chaining functions, *frames*, i.e. a collection of pointer values of `return address`, `LCL`, `ARG`, `THIS` and `THAT` of the caller, are saved on `SP` . Also, when a function starts its *local* and *argument* variables whose memory segments should be allocated.   
+
+The reason why the VM implementation of return commands store the return address in the temporary variable `retAdd` is because if the function has no argument, the next command `*arg=pop()` will override the return address.   
+
+`multiply` or `sqrt` is not a part of a VM language but belongs to the operating system. So, when there exist those commands in VM code, the virtual machine executes those commands by interacting with the operating system. VM language features are two types such as primitive operations (fixed), for example, `add`, `sub` etc. and abstract operations (extensible), i.e., `multiply`, `sqrt` and so on. 
+
+> till now nothing directly belongs to the hack platform. From now it does.
+
+### booting
+- Main.vm should exist.
+- Argument-less OS function Sys.init is executed whenever the VM implementation starts running or is reset.
+- Bootstrap code (SP-256, Call Sys.init)
+
+heap, memory mapped I/O and unused memory space are not concerns of the VM implementation.
 
 # projects done in different repositories
 - [assembler](https://github.com/Scoobi-wisdoom/assembler)
