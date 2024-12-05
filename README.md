@@ -5,7 +5,7 @@ Below is a paraphrased drawing from the textbook Figure 8.3. This figure explain
 +--------------------+
 |    arg - callee    |
 +--------------------+
-|   return address   |
+|   RETURN address   |
 +--------------------+
 | LCL  pointer value |
 +--------------------+
@@ -36,3 +36,4 @@ java -jar VMTranslator.jar <fileName>.vm
 - https://github.com/xctom/Nand2Tetris/blob/master/projects/07/src/CodeWriter.java
 - https://github.com/thomas-stockx/nand2tetris/blob/master/projects/07/VMTranslator/src/com/stockxit/nand2tetris/CodeWriter.java
 - https://github.com/xxyzz/nand2tetris/tree/master/08
+- https://github.com/msohaibalam/nand2tetris/blob/master/projects/08/code_writer.py

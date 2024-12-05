@@ -414,8 +414,35 @@ public class CodeWriter {
 
     public void writeReturn() {
         printWriter.println("// Write return");
+        // TODO("아래 두 개 메서드 실행 순서가 바뀌면 왜 프로그램이 실패하는지 아직도 모르겠다.")
+        saveLclAndReturnAddress();
+        moveCalleeReturnResultToCalleeArg();
 
-        // function 의 반환값이 push 된 상태임을 알아야 풀 수 있는 문제
+        removeFrame("THAT");
+        removeFrame("THIS");
+        removeFrame("ARG");
+        removeFrame("LCL");
+        // label 지정 없이도 JMP 가 가능함을 알아야 풀 수 있는 문제
+        printWriter.println("@R15");
+        printWriter.println("A=M");
+        printWriter.println("0;JMP");
+    }
+
+    // LCL 의 위치를 통해 frames 의 위치를 구한다는 것을 알아야 풀 수 있는 문제
+    private void saveLclAndReturnAddress() {
+        printWriter.println("@LCL");
+        printWriter.println("D=M");
+        printWriter.println("@" + R_14);
+        printWriter.println("M=D");
+        printWriter.println("@" + callerFrameCount);
+        printWriter.println("A=D-A");
+        printWriter.println("D=M");
+        printWriter.println("@R15");
+        printWriter.println("M=D");
+    }
+
+    // function 의 반환값이 push 된 상태임을 알아야 풀 수 있는 문제
+    private void moveCalleeReturnResultToCalleeArg() {
         printWriter.println("@SP");
         printWriter.println("AM=M-1");
         printWriter.println("D=M");
@@ -429,26 +456,6 @@ public class CodeWriter {
         printWriter.println("D=M");
         printWriter.println("@SP");
         printWriter.println("M=D+1");
-
-        // LCL 의 위치를 통해 frames 의 위치를 구한다는 것을 알아야 풀 수 있는 문제
-        printWriter.println("@LCL");
-        printWriter.println("D=M");
-        printWriter.println("@" + R_14);
-        printWriter.println("M=D");
-        printWriter.println("@" + callerFrameCount);
-        printWriter.println("A=D-A");
-        printWriter.println("D=M");
-        printWriter.println("@R15");
-        printWriter.println("M=D");
-        removeFrame("THAT");
-        removeFrame("THIS");
-        removeFrame("ARG");
-        removeFrame("LCL");
-
-        // label 지정 없이도 JMP 가 가능함을 알아야 풀 수 있는 문제
-        printWriter.println("@R15");
-        printWriter.println("A=M");
-        printWriter.println("0;JMP");
     }
 
     private void removeFrame(String frameName) {
