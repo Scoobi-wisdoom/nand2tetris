@@ -16,19 +16,23 @@ public class VMTranslator {
         if (file.isDirectory()) {
             File outputFile = new File(file.getAbsolutePath() + "/" + file.getName() + ASSEMBLY_FILE_EXTENSION);
             codeWriter = new CodeWriter(outputFile);
-            codeWriter.setFileName(outputFile.getName());
 
             // "... and that the first VM function that should start executing is the OS function Sys.init."
             codeWriter.init();
             Arrays.stream(file.listFiles())
                     .filter(f -> f.getName().endsWith(VM_FILE_EXTENSION))
-                    .forEach(f -> writeAssemblyCode(f, codeWriter));
+                    .forEach(f -> {
+                                // "Informs that the translation of a new VM file has started ~"
+                                codeWriter.setFileName(f.getName());
+                                writeAssemblyCode(f, codeWriter);
+                            }
+                    );
         } else if (file.isFile()) {
             final String fileName = file.getName();
             if (!fileName.endsWith(VM_FILE_EXTENSION)) throw new RuntimeException("Invalid file name: " + fileName);
             File outputFile = new File(file.getParent() + "/" + fileName.split(VM_FILE_EXTENSION)[0] + ASSEMBLY_FILE_EXTENSION);
             codeWriter = new CodeWriter(outputFile);
-            codeWriter.setFileName(outputFile.getName());
+            codeWriter.setFileName(fileName);
 
             writeAssemblyCode(file, codeWriter);
         } else {

@@ -239,25 +239,25 @@ public class CodeWriter {
                 }
                 break;
             }
-            // static 의 base 가 16 임을 캐치해야 풀 수 있는 문제.
+
+            // VMTranslator 가 아닌 Assembler 가 파일 이름을 통해 static 으로의 mapping 을 수행한다는 것을 알아야 풀 수 있는 문제
+            // static segment 에는 pointer value 가 아닌 value 가 저장된다는 것을 알아야 풀 수 있는 문제
             case "static": {
                 if (fileName == null) throw new RuntimeException("fileName should not be null.");
+                // "Each reference to static i in a VM program stored in file Foo.vm can be translated to the assembly symbol Foo.i."
+                // "According to the Hack machine language specification (chapter 6), the Hack assembler will map these symbolic variables on the host RAM, starting at address 16."
+                String staticReference = "@" + fileName + "." + index;
                 if (command == Parser.C_POP) {
                     printWriter.println("// pop static " + index);
-                    printWriter.println("@" + (16 + index));
-                    printWriter.println("D=A");
-                    printWriter.println("@R13");
-                    printWriter.println("M=D");
                     printWriter.println("@SP");
                     printWriter.println("AM=M-1");
                     printWriter.println("D=M");
-                    printWriter.println("@R13");
-                    printWriter.println("A=M");
+                    printWriter.println(staticReference);
                     printWriter.println("M=D");
                 }
                 if (command == Parser.C_PUSH) {
                     printWriter.println("// push static " + index);
-                    printWriter.println("@" + (16 + index));
+                    printWriter.println(staticReference);
                     printWriter.println("D=M");
                     printWriter.println("@SP");
                     printWriter.println("A=M");
