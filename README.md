@@ -161,6 +161,21 @@ The reason why the VM implementation of return commands store the return address
 
 heap, memory mapped I/O and unused memory space are not concerns of the VM implementation.
 
+## Week 3
+A programming language has not only its own specifications but also ones belong to OS such as OS services (reading keyboard input & PrintOut) and OS data types (Array & String).   
+
+In Jack language, whenever String object is no longer needed, it should be disposed since varialbles of String are only references. So without disposal String keeps existing.
+
+Let's say that your program is supposed to fill 75 pixels out of 16 x 16 pixels using high level code. In this case the number of low-level machine operations needed is calculated by `(operationCount for 1 pixel) * pixelCount = 40 * 75`. On the contrary, when you do this only through writing into the RAM directly, only 4 machine operations are required for each row, which means the total number of operations is `16 * 4`.
+
+write 0000000000000011 into RAM[4000]
+```text
+@3
+D=A
+@4000
+M=D
+```
+
 # projects done in different repositories
 - [assembler](https://github.com/Scoobi-wisdoom/assembler)
 - [VMTranslator](https://github.com/Scoobi-wisdoom/VMTranslator)
