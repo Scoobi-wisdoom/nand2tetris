@@ -1,5 +1,3 @@
-import java.util.Set;
-
 public enum Keyword {
     CLASS,
     METHOD,
@@ -22,4 +20,29 @@ public enum Keyword {
     FALSE,
     NULL,
     THIS,
+    ;
+
+    public static final String[] keywords = new String[]{
+            "class",
+            "method",
+            "function",
+            "constructor",
+            "int",
+            "boolean",
+            "char",
+            "void",
+            "var",
+            "static",
+            "field",
+            "let",
+            "do",
+            "if",
+            "else",
+            "while",
+            "return",
+            "true",
+            "false",
+            "null",
+            "this",
+    };
 }
