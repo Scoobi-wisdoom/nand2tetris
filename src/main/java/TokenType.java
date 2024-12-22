@@ -1,4 +1,4 @@
-enum class TokenType {
+public enum TokenType {
     KEYWORD,
     SYMBOL,
     IDENTIFIER,
