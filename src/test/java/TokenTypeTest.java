@@ -68,4 +68,28 @@ class TokenTypeTest {
     public void getIdentifierConstType() {
         Assertions.assertEquals(TokenType.IDENTIFIER, TokenType.getTokenType("variable"));
     }
+
+    @Test
+    public void isSymbol() {
+        Assertions.assertAll(
+                () -> Assertions.assertTrue(TokenType.isSymbol('{')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('}')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('(')),
+                () -> Assertions.assertTrue(TokenType.isSymbol(')')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('[')),
+                () -> Assertions.assertTrue(TokenType.isSymbol(']')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('.')),
+                () -> Assertions.assertTrue(TokenType.isSymbol(',')),
+                () -> Assertions.assertTrue(TokenType.isSymbol(';')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('+')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('-')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('*')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('/')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('&')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('<')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('>')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('=')),
+                () -> Assertions.assertTrue(TokenType.isSymbol('~'))
+        );
+    }
 }

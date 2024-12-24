@@ -44,7 +44,7 @@ public enum TokenType {
         }
     }
 
-    private static boolean isSymbol(char c) {
+    public static boolean isSymbol(char c) {
         for (char symbol : symbols) {
             if (symbol == c) {
                 return true;
