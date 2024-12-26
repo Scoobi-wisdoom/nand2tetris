@@ -1,5 +1,11 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Parser {
     public static List<String> getTokens(String line) {
@@ -43,5 +49,43 @@ public class Parser {
             }
         }
         return tokens;
+    }
+
+    public static String removeComments(InputStream inputStream) {
+        StringBuilder sourceWithoutComment = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, UTF_8))) {
+            boolean isInsideAsteriskComment = false;
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String lineWithoutComment = "";
+                line = line.trim();
+                for (int i = 0; i < line.length(); i++) {
+                    if (i + 1 >= line.length()) break;
+                    char currentChar = line.charAt(i);
+                    char nextChar = line.charAt(i + 1);
+
+                    if (isInsideAsteriskComment) {
+                        if (currentChar == '*' && nextChar == '/') {
+                            isInsideAsteriskComment = false;
+                        }
+                    } else {
+                        if (currentChar == '/' && nextChar == '*') {
+                            isInsideAsteriskComment = true;
+                            lineWithoutComment = line.substring(0, i) + "\n";
+                        } else if (currentChar == '/' && nextChar == '/') {
+                            lineWithoutComment = line.substring(0, i) + "\n";
+                            break;
+                        } else {
+                            lineWithoutComment = line + "\n";
+                        }
+                    }
+                }
+                sourceWithoutComment.append(lineWithoutComment);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading a file", e);
+        }
+        return sourceWithoutComment.toString();
     }
 }
