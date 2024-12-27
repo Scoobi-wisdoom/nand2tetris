@@ -72,16 +72,16 @@ public class Parser {
                     } else {
                         if (currentChar == '/' && nextChar == '*') {
                             isInsideAsteriskComment = true;
-                            lineWithoutComment = line.substring(0, i) + "\n";
+                            lineWithoutComment = line.substring(0, i);
                         } else if (currentChar == '/' && nextChar == '/') {
-                            lineWithoutComment = line.substring(0, i) + "\n";
+                            lineWithoutComment = line.substring(0, i);
                             break;
                         } else {
-                            lineWithoutComment = line + "\n";
+                            lineWithoutComment = line;
                         }
                     }
                 }
-                sourceWithoutComment.append(lineWithoutComment);
+                sourceWithoutComment.append(lineWithoutComment).append("\n");
             }
         } catch (IOException e) {
             throw new RuntimeException("Error reading a file", e);

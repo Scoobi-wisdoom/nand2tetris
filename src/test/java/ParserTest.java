@@ -49,6 +49,8 @@ class ParserTest {
                 """.getBytes(UTF_8)));
         String multiLineCommentExpected = """
                 
+                
+                
                 class SquareGame
                 """;
 
@@ -58,6 +60,8 @@ class ParserTest {
                  */
                 """.getBytes(UTF_8)));
         String multiLineCommentOnlyExpected = """
+                
+                
                 
                 """;
 
@@ -142,9 +146,13 @@ class ParserTest {
         String actual = Parser.removeComments(new ByteArrayInputStream(input));
         String expected = """
                 
+                
+                
+                
                 class SquareGame {
                 field Square square;\s
                 field int direction;\s
+                
                 
                 
                 constructor SquareGame new() {}
