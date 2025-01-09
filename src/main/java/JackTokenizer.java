@@ -36,32 +36,32 @@ public class JackTokenizer {
 
     public Keyword keyword() {
         if (tokenType() != TokenType.KEYWORD)
-            throw new RuntimeException("KEYWORD tokenType expected but " + tokenType() + " found.");
+            throw new RuntimeException("KEYWORD tokenType expected but token " + currentToken + " of type " + tokenType() + " found.");
 
         return Keyword.getKeyword(currentToken);
     }
 
     public char symbol() {
         if (tokenType() != TokenType.SYMBOL)
-            throw new RuntimeException("SYMBOL tokenType expected but " + tokenType() + " found.");
+            throw new RuntimeException("SYMBOL tokenType expected but token " + currentToken + " of type " + tokenType() + " found.");
         return currentToken.charAt(0);
     }
 
     public String identifier() {
         if (tokenType() != TokenType.IDENTIFIER)
-            throw new RuntimeException("IDENTIFIER tokenType expected but " + tokenType() + " found.");
+            throw new RuntimeException("IDENTIFIER tokenType expected but token " + currentToken + " of type " + tokenType() + " found.");
         return currentToken;
     }
 
     public int intVal() {
         if (tokenType() != TokenType.INT_CONST)
-            throw new RuntimeException("INT_CONST tokenType expected but " + tokenType() + " found.");
+            throw new RuntimeException("INT_CONST tokenType expected but token " + currentToken + " of type " + tokenType() + " found.");
         return Integer.parseInt(currentToken);
     }
 
     public String stringVal() {
         if (tokenType() != TokenType.STRING_CONST)
-            throw new RuntimeException("STRING_CONST tokenType expected but " + tokenType() + " found.");
+            throw new RuntimeException("STRING_CONST tokenType expected but token " + currentToken + " of type " + tokenType() + " found.");
         return currentToken.replace("\"", "");
     }
 }
