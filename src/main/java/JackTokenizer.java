@@ -2,32 +2,40 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class JackTokenizer {
-    private final Queue<String> tokens = new LinkedList<>();
+    private final ListIterator<String> tokenIterator;
     private String currentToken;
 
     public JackTokenizer(InputStream inputStream) {
         String commentRemovedInput = Parser.removeComments(inputStream);
+        List<String> tokens = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new StringReader(commentRemovedInput))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (!line.isBlank()) tokens.addAll(Parser.getTokens(line.trim()));
             }
+            tokenIterator = tokens.listIterator();
         } catch (IOException e) {
             throw new RuntimeException("Error while reading the file", e);
         }
     }
 
     public boolean hasMoreTokens() {
-        return !tokens.isEmpty();
+        return tokenIterator.hasNext();
     }
 
     public void advance() {
         if (!hasMoreTokens()) throw new RuntimeException("No token left.");
-        currentToken = tokens.poll();
+        currentToken = tokenIterator.next();
+    }
+
+    public void retreat() {
+        if (!tokenIterator.hasPrevious()) throw new RuntimeException("No previous token exists.");
+        currentToken = tokenIterator.previous();
     }
 
     public TokenType tokenType() {
