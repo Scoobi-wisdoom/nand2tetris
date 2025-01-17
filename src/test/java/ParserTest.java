@@ -24,6 +24,20 @@ class ParserTest {
     }
 
     @Test
+    public void parseOperations() {
+        List<String> actual = Parser.getTokens("i + 0 - 1");
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(5, actual.size()),
+                () -> Assertions.assertEquals("i", actual.get(0)),
+                () -> Assertions.assertEquals("+", actual.get(1)),
+                () -> Assertions.assertEquals("0", actual.get(2)),
+                () -> Assertions.assertEquals("-", actual.get(3)),
+                () -> Assertions.assertEquals("1", actual.get(4))
+        );
+    }
+
+    @Test
     public void parseQuotations() {
         List<String> actual = Parser.getTokens("do Output.printString(\"Score: 0\");");
         Assertions.assertAll(

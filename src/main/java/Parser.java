@@ -48,6 +48,10 @@ public class Parser {
                 }
             }
         }
+        if (!cumulativeString.isEmpty()) {
+            tokens.add(cumulativeString.toString());
+        }
+
         return tokens;
     }
 
