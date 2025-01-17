@@ -19,7 +19,7 @@ public class JackTokenizer {
                 if (!line.isBlank()) tokens.addAll(Parser.getTokens(line.trim()));
             }
             tokenIterator = tokens.listIterator();
-            currentToken = tokens.get(0);
+            currentToken = null;
         } catch (IOException e) {
             throw new RuntimeException("Error while reading the file", e);
         }
