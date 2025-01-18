@@ -173,4 +173,16 @@ class ParserTest {
                 """;
         Assertions.assertEquals(expected, actual);
     }
+
+    @Test
+    public void removeNothing() {
+        byte[] input = "1"
+                .getBytes(UTF_8);
+
+        String actual = Parser.removeComments(new ByteArrayInputStream(input));
+        String expected = """
+                1
+                """;
+        Assertions.assertEquals(expected, actual);
+    }
 }

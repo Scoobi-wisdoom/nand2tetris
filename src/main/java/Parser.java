@@ -64,26 +64,30 @@ public class Parser {
             while ((line = reader.readLine()) != null) {
                 String lineWithoutComment = "";
                 line = line.trim();
-                for (int i = 0; i < line.length(); i++) {
-                    if (i + 1 >= line.length()) break;
-                    char currentChar = line.charAt(i);
-                    char nextChar = line.charAt(i + 1);
+                if (line.length() > 1) {
+                    for (int i = 0; i < line.length(); i++) {
+                        if (i + 1 >= line.length()) break;
+                        char currentChar = line.charAt(i);
+                        char nextChar = line.charAt(i + 1);
 
-                    if (isInsideAsteriskComment) {
-                        if (currentChar == '*' && nextChar == '/') {
-                            isInsideAsteriskComment = false;
-                        }
-                    } else {
-                        if (currentChar == '/' && nextChar == '*') {
-                            isInsideAsteriskComment = true;
-                            lineWithoutComment = line.substring(0, i);
-                        } else if (currentChar == '/' && nextChar == '/') {
-                            lineWithoutComment = line.substring(0, i);
-                            break;
+                        if (isInsideAsteriskComment) {
+                            if (currentChar == '*' && nextChar == '/') {
+                                isInsideAsteriskComment = false;
+                            }
                         } else {
-                            lineWithoutComment = line;
+                            if (currentChar == '/' && nextChar == '*') {
+                                isInsideAsteriskComment = true;
+                                lineWithoutComment = line.substring(0, i);
+                            } else if (currentChar == '/' && nextChar == '/') {
+                                lineWithoutComment = line.substring(0, i);
+                                break;
+                            } else {
+                                lineWithoutComment = line;
+                            }
                         }
                     }
+                } else {
+                    lineWithoutComment = line;
                 }
                 sourceWithoutComment.append(lineWithoutComment).append("\n");
             }
