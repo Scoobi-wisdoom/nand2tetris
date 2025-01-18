@@ -1,4 +1,3 @@
-import java.util.Arrays;
 
 public enum TokenType {
     KEYWORD,
@@ -7,16 +6,7 @@ public enum TokenType {
     INT_CONST,
     STRING_CONST,
     ;
-    private static final char[] symbols = new char[]{
-            '{',
-            '}',
-            '(',
-            ')',
-            '[',
-            ']',
-            '.',
-            ',',
-            ';',
+    private static final char[] operationSymbols = new char[]{
             '+',
             '-',
             '*',
@@ -26,13 +16,38 @@ public enum TokenType {
             '<',
             '>',
             '=',
-            '~',
     };
+
+    private static final char[] symbols;
+
+    static {
+        char[] nonOperationSymbols = new char[]{
+                '{',
+                '}',
+                '(',
+                ')',
+                '[',
+                ']',
+                '.',
+                ',',
+                ';',
+                '~',
+        };
+
+        symbols = new char[nonOperationSymbols.length + operationSymbols.length];
+
+        for (int i = 0; i < nonOperationSymbols.length; i++) {
+            symbols[i] = nonOperationSymbols[i];
+        }
+        for (int i = 0; i < operationSymbols.length; i++) {
+            symbols[i + nonOperationSymbols.length] = operationSymbols[i];
+        }
+    }
 
     public static TokenType getTokenType(String token) {
         if (token == null) throw new RuntimeException("Given token is null.");
 
-        if (Arrays.asList(Keyword.keywords).contains(token)) {
+        if (Keyword.keywords.contains(token)) {
             return TokenType.KEYWORD;
         } else if (token.startsWith("\"")) {
             return TokenType.STRING_CONST;
@@ -47,6 +62,15 @@ public enum TokenType {
 
     public static boolean isSymbol(char c) {
         for (char symbol : symbols) {
+            if (symbol == c) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isOperationSymbol(char c) {
+        for (char symbol : operationSymbols) {
             if (symbol == c) {
                 return true;
             }

@@ -1,3 +1,5 @@
+import java.util.List;
+
 public enum Keyword {
     CLASS,
     METHOD,
@@ -22,7 +24,7 @@ public enum Keyword {
     THIS,
     ;
 
-    public static final String[] keywords = new String[]{
+    public static final List<String> keywords = List.of(
             "class",
             "method",
             "function",
@@ -43,8 +45,8 @@ public enum Keyword {
             "true",
             "false",
             "null",
-            "this",
-    };
+            "this"
+    );
 
     public static Keyword getKeyword(String token) {
         return switch (token) {
@@ -71,5 +73,10 @@ public enum Keyword {
             case "this" -> Keyword.THIS;
             default -> throw new RuntimeException(token + " is not a keyword.");
         };
+    }
+
+    @Override
+    public String toString() {
+        return name().toLowerCase();
     }
 }

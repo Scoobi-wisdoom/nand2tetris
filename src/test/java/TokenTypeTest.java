@@ -94,4 +94,31 @@ class TokenTypeTest {
                 () -> Assertions.assertTrue(TokenType.isSymbol('~'))
         );
     }
+
+    @Test
+    public void isOperationSymbol() {
+        Assertions.assertAll(
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol('{')),
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol('}')),
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol('(')),
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol(')')),
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol('[')),
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol(']')),
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol('.')),
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol(',')),
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol(';')),
+
+                () -> Assertions.assertTrue(TokenType.isOperationSymbol('+')),
+                () -> Assertions.assertTrue(TokenType.isOperationSymbol('-')),
+                () -> Assertions.assertTrue(TokenType.isOperationSymbol('*')),
+                () -> Assertions.assertTrue(TokenType.isOperationSymbol('/')),
+                () -> Assertions.assertTrue(TokenType.isOperationSymbol('&')),
+                () -> Assertions.assertTrue(TokenType.isOperationSymbol('|')),
+                () -> Assertions.assertTrue(TokenType.isOperationSymbol('<')),
+                () -> Assertions.assertTrue(TokenType.isOperationSymbol('>')),
+                () -> Assertions.assertTrue(TokenType.isOperationSymbol('=')),
+
+                () -> Assertions.assertFalse(TokenType.isOperationSymbol('~'))
+        );
+    }
 }
