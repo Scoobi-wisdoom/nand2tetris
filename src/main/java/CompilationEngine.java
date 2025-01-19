@@ -142,15 +142,22 @@ public class CompilationEngine {
                 }
                 break;
             case SYMBOL:
-                if (
-                        jackTokenizer.symbol() == '-' ||
-                                jackTokenizer.symbol() == '~'
-                ) {
-                    printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-                    jackTokenizer.advance();
-                    compileTerm();
-                } else {
-                    throw new RuntimeException("Not an eligible symbol in a term: " + jackTokenizer.symbol());
+                switch (jackTokenizer.symbol()) {
+                    case '(':
+                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                        jackTokenizer.advance();
+                        compileExpression();
+                        assert jackTokenizer.symbol() == ')';
+                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                        break;
+                    case '-',
+                         '~':
+                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                        jackTokenizer.advance();
+                        compileTerm();
+                        break;
+                    default:
+                        throw new RuntimeException("Not an eligible symbol in a term: " + jackTokenizer.symbol());
                 }
                 break;
             case KEYWORD:

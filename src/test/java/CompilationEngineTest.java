@@ -88,7 +88,7 @@ class CompilationEngineTest {
         }
 
         @Test
-        public void symbol() {
+        public void negateSymbols() {
             // given/when
             String negativeActual = CompilationEngineTest.getCompileOutput("-1", CompilationEngine::compileTerm);
             String negativeExpected = """
@@ -113,6 +113,29 @@ class CompilationEngineTest {
                     () -> Assertions.assertEquals(negativeExpected, negativeActual),
                     () -> Assertions.assertEquals(notExpected, notActual)
             );
+        }
+
+        @Test
+        public void parenthesisSymbol() {
+            // given/when
+            String actual = getCompileOutput("(x + size)", CompilationEngine::compileTerm);
+            String expected = """
+                    <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                    <term>
+                    <identifier> x </identifier>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                    <identifier> size </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                    </term>
+                    """;
+
+            Assertions.assertEquals(expected, actual);
         }
 
         @Test
