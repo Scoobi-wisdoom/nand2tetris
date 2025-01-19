@@ -161,15 +161,15 @@ public class CompilationEngine {
                 }
                 break;
             case KEYWORD:
-                if (
-                        jackTokenizer.keyword() == Keyword.TRUE ||
-                                jackTokenizer.keyword() == Keyword.FALSE ||
-                                jackTokenizer.keyword() == Keyword.NULL ||
-                                jackTokenizer.keyword() == Keyword.THIS
-                ) {
-                    printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
-                } else {
-                    throw new RuntimeException("Not an eligible keyword in a term: " + jackTokenizer.keyword());
+                switch (jackTokenizer.keyword()) {
+                    case TRUE,
+                         FALSE,
+                         NULL,
+                         THIS:
+                        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+                        break;
+                    default:
+                        throw new RuntimeException("Not an eligible keyword in a term: " + jackTokenizer.keyword());
                 }
                 break;
             case INT_CONST:
