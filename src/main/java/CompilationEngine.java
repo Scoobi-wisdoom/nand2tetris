@@ -149,6 +149,7 @@ public class CompilationEngine {
                         compileExpression();
                         assert jackTokenizer.symbol() == ')';
                         printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                        jackTokenizer.advance();
                         break;
                     case '-',
                          '~':

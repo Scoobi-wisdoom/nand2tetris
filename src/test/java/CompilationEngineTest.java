@@ -199,7 +199,36 @@ class CompilationEngineTest {
     @Nested
     class CompileExpression {
         @Test
-        public void operations() {
+        public void parenthesis() {
+            // given/when
+            String actual = getCompileOutput("(x + size) - 1", CompilationEngine::compileExpression);
+            String expected = """
+                    <expression>
+                    <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                    <term>
+                    <identifier> x </identifier>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                    <identifier> size </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                    </term>
+                    <symbol> - </symbol>
+                    <term>
+                    <integerConstant> 1 </integerConstant>
+                    </term>
+                    </expression>
+                    """;
+
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void noParenthesis() {
             // given/when
             String actual = getCompileOutput("i + 0 - 1", CompilationEngine::compileExpression);
             String expected = """
