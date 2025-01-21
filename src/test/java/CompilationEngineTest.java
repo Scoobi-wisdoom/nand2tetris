@@ -251,4 +251,84 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class CompileExpressionList {
+        @Test
+        public void argument() {
+            // given/when
+            String actual = getCompileOutput(
+                    "((x + size) - 1, y, x + size, y + size)"
+                            .substring(1),
+                    CompilationEngine::compileExpressionList
+            );
+            String expected = """
+                    <expressionList>
+                    <expression>
+                    <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                    <term>
+                    <identifier> x </identifier>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                    <identifier> size </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                    </term>
+                    <symbol> - </symbol>
+                    <term>
+                    <integerConstant> 1 </integerConstant>
+                    </term>
+                    </expression>
+                    <symbol> , </symbol>
+                    <expression>
+                    <term>
+                    <identifier> y </identifier>
+                    </term>
+                    </expression>
+                    <symbol> , </symbol>
+                    <expression>
+                    <term>
+                    <identifier> x </identifier>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                    <identifier> size </identifier>
+                    </term>
+                    </expression>
+                    <symbol> , </symbol>
+                    <expression>
+                    <term>
+                    <identifier> y </identifier>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                    <identifier> size </identifier>
+                    </term>
+                    </expression>
+                    </expressionList>
+                    """;
+
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void noArgument() {
+            // given/when
+            String actual = getCompileOutput(
+                    "()"
+                            .substring(1),
+                    CompilationEngine::compileExpressionList
+            );
+            String expected = """
+                    <expressionList>
+                    </expressionList>
+                    """;
+
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }

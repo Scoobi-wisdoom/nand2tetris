@@ -185,12 +185,38 @@ public class CompilationEngine {
         printWriter.println("</term>");
     }
 
-    public void compileExpressionList() {
+    /**
+     * Implemented to return int value according to the textbook's requirements even though it is never used.
+     */
+    public int compileExpressionList() {
         printWriter.println("<expressionList>");
+        int argumentCount = 0;
         if (jackTokenizer.tokenType() == TokenType.SYMBOL && jackTokenizer.symbol() == ')') {
             jackTokenizer.retreat();
+        } else {
+            while (jackTokenizer.hasMoreTokens()) {
+                if (jackTokenizer.tokenType() == TokenType.SYMBOL) {
+                    switch (jackTokenizer.symbol()) {
+                        case '(':
+                            compileExpression();
+                            break;
+                        case ',':
+                            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                            jackTokenizer.advance();
+                            compileExpression();
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    break;
+                }
+                jackTokenizer.advance();
+            }
+            argumentCount++;
         }
         printWriter.println("</expressionList>");
+        return argumentCount;
     }
 
     // Custom method for testing.
