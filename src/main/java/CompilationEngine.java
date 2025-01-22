@@ -227,30 +227,30 @@ public class CompilationEngine {
     public int compileExpressionList() {
         printWriter.println("<expressionList>");
         int argumentCount = 0;
-        if (jackTokenizer.tokenType() == TokenType.SYMBOL && jackTokenizer.symbol() == ')') {
-            jackTokenizer.retreat();
-        } else {
-            while (jackTokenizer.hasMoreTokens()) {
-                if (jackTokenizer.tokenType() == TokenType.SYMBOL) {
-                    switch (jackTokenizer.symbol()) {
-                        case '(':
-                            compileExpression();
-                            break;
-                        case ',':
-                            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-                            jackTokenizer.advance();
-                            compileExpression();
-                            break;
-                        default:
-                            break;
-                    }
-                } else {
-                    break;
+        whileLoop:
+        while (jackTokenizer.hasMoreTokens()) {
+            if (jackTokenizer.tokenType() == TokenType.SYMBOL) {
+                switch (jackTokenizer.symbol()) {
+                    case ')':
+                        break whileLoop;
+                    case '(':
+                        compileExpression();
+                        break;
+                    case ',':
+                        argumentCount++;
+                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                        jackTokenizer.advance();
+                        compileExpression();
+                        break;
                 }
-                jackTokenizer.advance();
+            } else {
+                compileExpression();
             }
-            argumentCount++;
+            jackTokenizer.advance();
         }
+
+        assert jackTokenizer.symbol() == ')';
+        jackTokenizer.retreat();
         printWriter.println("</expressionList>");
         return argumentCount;
     }

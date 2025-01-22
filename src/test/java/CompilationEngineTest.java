@@ -277,7 +277,44 @@ class CompilationEngineTest {
     @Nested
     class CompileExpressionList {
         @Test
-        public void argument() {
+        public void simple() {
+            String actual = getCompileOutput("(x, y, x, y)"
+                            .substring(1),
+                    CompilationEngine::compileExpressionList
+            );
+            String expected = """
+                    <expressionList>
+                    <expression>
+                    <term>
+                    <identifier> x </identifier>
+                    </term>
+                    </expression>
+                    <symbol> , </symbol>
+                    <expression>
+                    <term>
+                    <identifier> y </identifier>
+                    </term>
+                    </expression>
+                    <symbol> , </symbol>
+                    <expression>
+                    <term>
+                    <identifier> x </identifier>
+                    </term>
+                    </expression>
+                    <symbol> , </symbol>
+                    <expression>
+                    <term>
+                    <identifier> y </identifier>
+                    </term>
+                    </expression>
+                    </expressionList>
+                    """;
+
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void operation() {
             // given/when
             String actual = getCompileOutput(
                     "((x + size) - 1, y, x + size, y + size)"
