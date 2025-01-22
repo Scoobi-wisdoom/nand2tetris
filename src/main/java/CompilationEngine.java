@@ -80,6 +80,37 @@ public class CompilationEngine {
     }
 
     public void compileDo() {
+        printWriter.println("<doStatement>");
+        assert jackTokenizer.keyword() == Keyword.DO;
+        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+        whileLoop:
+        while (jackTokenizer.hasMoreTokens()) {
+            jackTokenizer.advance();
+            if (jackTokenizer.tokenType() == TokenType.SYMBOL) {
+                switch (jackTokenizer.symbol()) {
+                    case '(':
+                        break whileLoop;
+                    case '.':
+                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                        break;
+                    default:
+                        throw new RuntimeException("Unexpected symbol: " + jackTokenizer.symbol());
+                }
+            } else {
+                printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+            }
+        }
+        assert jackTokenizer.symbol() == '(';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+        compileExpressionList();
+        jackTokenizer.advance();
+        assert jackTokenizer.symbol() == ')';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+        assert jackTokenizer.symbol() == ';';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        printWriter.println("</doStatement>");
     }
 
     public void compileReturn() {

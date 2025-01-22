@@ -569,4 +569,97 @@ class CompilationEngineTest {
             );
         }
     }
+
+    @Nested
+    class CompileDo {
+        @Test
+        public void function() {
+            // given/when
+            String actual = getCompileOutput("do Output.println();", CompilationEngine::compileDo);
+            String expected = """
+                    <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> Output </identifier>
+                    <symbol> . </symbol>
+                    <identifier> println </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                    </doStatement>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void method() {
+            // given/when
+            String actual = getCompileOutput("do draw();", CompilationEngine::compileDo);
+            String expected = """
+                    <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> draw </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                    </doStatement>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void otherMethod() {
+            // given/when
+            String actual = getCompileOutput("do game.run();", CompilationEngine::compileDo);
+            String expected = """
+                    <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> game </identifier>
+                    <symbol> . </symbol>
+                    <identifier> run </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                    </doStatement>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void arguments() {
+            // given/when
+            String actual = getCompileOutput("do Screen.setColor(x);", CompilationEngine::compileDo);
+            String expected = """
+                    <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> Screen </identifier>
+                    <symbol> . </symbol>
+                    <identifier> setColor </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    <expression>
+                    <term>
+                    <identifier> x </identifier>
+                    </term>
+                    </expression>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                    </doStatement>
+                    """;
+
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }
