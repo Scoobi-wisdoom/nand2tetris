@@ -83,6 +83,17 @@ public class CompilationEngine {
     }
 
     public void compileReturn() {
+        printWriter.println("<returnStatement>");
+        assert jackTokenizer.keyword() == Keyword.RETURN;
+        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+        jackTokenizer.advance();
+        if (jackTokenizer.tokenType() != TokenType.SYMBOL || jackTokenizer.symbol() != ';') {
+            compileExpression();
+            jackTokenizer.advance();
+        }
+        assert jackTokenizer.symbol() == ';';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        printWriter.println("</returnStatement>");
     }
 
     /**

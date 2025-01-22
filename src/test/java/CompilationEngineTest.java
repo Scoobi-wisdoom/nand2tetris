@@ -431,4 +431,105 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class CompileReturn {
+        @Test
+        public void nothing() {
+            // given/when
+            String actual = getCompileOutput("return;", CompilationEngine::compileReturn);
+            String expected = """
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void single() {
+            // given/when
+            String identifierActual = getCompileOutput("return x;", CompilationEngine::compileReturn);
+            String identifierExpected = """
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <expression>
+                    <term>
+                    <identifier> x </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    """;
+
+            String keywordActual = getCompileOutput("return this;", CompilationEngine::compileReturn);
+            String keywordExpected = """
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <expression>
+                    <term>
+                    <keyword> this </keyword>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    """;
+
+            // then
+            Assertions.assertAll(
+                    () -> Assertions.assertEquals(identifierExpected, identifierActual),
+                    () -> Assertions.assertEquals(keywordExpected, keywordActual)
+            );
+        }
+
+        @Test
+        public void combination() {
+            // given/when
+            String operationActual = getCompileOutput("return x + 5;", CompilationEngine::compileReturn);
+            String operationExpected = """
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <expression>
+                    <term>
+                    <identifier> x </identifier>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                    <integerConstant> 5 </integerConstant>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    """;
+
+            String arrayActual = getCompileOutput("return charMaps[c];", CompilationEngine::compileReturn);
+            String arrayExpected = """
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <expression>
+                    <term>
+                    <identifier> charMaps </identifier>
+                    <symbol> [ </symbol>
+                    <expression>
+                    <term>
+                    <identifier> c </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ] </symbol>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    """;
+
+            // then
+            Assertions.assertAll(
+                    () -> Assertions.assertEquals(operationExpected, operationActual),
+                    () -> Assertions.assertEquals(arrayExpected, arrayActual)
+            );
+        }
+    }
 }
