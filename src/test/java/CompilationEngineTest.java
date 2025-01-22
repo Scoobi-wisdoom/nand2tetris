@@ -337,4 +337,98 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class CompileLet {
+        @Test
+        public void plainIdentifier() {
+            // given/when
+            String stringConstantActual = getCompileOutput("let s = \"string constant\";", CompilationEngine::compileLet);
+            String stringConstantExpected = """
+                    <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> s </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                    <term>
+                    <stringConstant> string constant </stringConstant>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </letStatement>
+                    """;
+
+            String integerConstantActual = getCompileOutput("let i = 0;", CompilationEngine::compileLet);
+            String integerConstantExpected = """
+                    <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> i </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                    <term>
+                    <integerConstant> 0 </integerConstant>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </letStatement>
+                    """;
+
+            String nullActual = getCompileOutput("let s = null;", CompilationEngine::compileLet);
+            String nullExpected = """
+                    <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> s </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                    <term>
+                    <keyword> null </keyword>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </letStatement>
+                    """;
+
+            Assertions.assertAll(
+                    () -> Assertions.assertEquals(stringConstantExpected, stringConstantActual),
+                    () -> Assertions.assertEquals(integerConstantExpected, integerConstantActual),
+                    () -> Assertions.assertEquals(nullExpected, nullActual)
+            );
+        }
+
+        @Test
+        public void arrayIdentifier() {
+            // given/when
+            String actual = getCompileOutput("let a[1] = a[2];", CompilationEngine::compileLet);
+            String expected = """
+                    <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> a </identifier>
+                    <symbol> [ </symbol>
+                    <expression>
+                    <term>
+                    <integerConstant> 1 </integerConstant>
+                    </term>
+                    </expression>
+                    <symbol> ] </symbol>
+                    <symbol> = </symbol>
+                    <expression>
+                    <term>
+                    <identifier> a </identifier>
+                    <symbol> [ </symbol>
+                    <expression>
+                    <term>
+                    <integerConstant> 2 </integerConstant>
+                    </term>
+                    </expression>
+                    <symbol> ] </symbol>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </letStatement>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }
