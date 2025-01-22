@@ -117,6 +117,7 @@ public class CompilationEngine {
                             printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                             jackTokenizer.advance();
                             compileExpression();
+                            jackTokenizer.advance();
                             assert jackTokenizer.symbol() == ']';
                             printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                             break;
@@ -147,9 +148,9 @@ public class CompilationEngine {
                         printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                         jackTokenizer.advance();
                         compileExpression();
+                        jackTokenizer.advance();
                         assert jackTokenizer.symbol() == ')';
                         printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-                        jackTokenizer.advance();
                         break;
                     case '-',
                          '~':

@@ -4,21 +4,21 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class JackTokenizer {
-    private final ListIterator<String> tokenIterator;
+    private final List<String> tokens;
+    private int currentIndex;
     private String currentToken;
 
     public JackTokenizer(InputStream inputStream) {
         String commentRemovedInput = Parser.removeComments(inputStream);
-        List<String> tokens = new ArrayList<>();
+        tokens = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new StringReader(commentRemovedInput))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (!line.isBlank()) tokens.addAll(Parser.getTokens(line.trim()));
             }
-            tokenIterator = tokens.listIterator();
+            currentIndex = -1;
             currentToken = null;
         } catch (IOException e) {
             throw new RuntimeException("Error while reading the file", e);
@@ -26,17 +26,19 @@ public class JackTokenizer {
     }
 
     public boolean hasMoreTokens() {
-        return tokenIterator.hasNext();
+        return !tokens.isEmpty() && currentIndex + 1 < tokens.size();
     }
 
     public void advance() {
         if (!hasMoreTokens()) throw new RuntimeException("No token left.");
-        currentToken = tokenIterator.next();
+        currentIndex += 1;
+        currentToken = tokens.get(currentIndex);
     }
 
     public void retreat() {
-        if (!tokenIterator.hasPrevious()) throw new RuntimeException("No previous token exists.");
-        currentToken = tokenIterator.previous();
+        if (currentIndex <= 0) throw new RuntimeException("No previous token exists.");
+        currentIndex -= 1;
+        currentToken = tokens.get(currentIndex);
     }
 
     public TokenType tokenType() {

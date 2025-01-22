@@ -250,6 +250,28 @@ class CompilationEngineTest {
             // then
             Assertions.assertEquals(expected, actual);
         }
+
+        @Test
+        public void constructor() {
+            // given/when
+            String actual = getCompileOutput("SquareGame.new()", CompilationEngine::compileExpression);
+            String expected = """
+                    <expression>
+                    <term>
+                    <identifier> SquareGame </identifier>
+                    <symbol> . </symbol>
+                    <identifier> new </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    </term>
+                    </expression>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
     }
 
     @Nested
@@ -309,22 +331,6 @@ class CompilationEngineTest {
                     <identifier> size </identifier>
                     </term>
                     </expression>
-                    </expressionList>
-                    """;
-
-            Assertions.assertEquals(expected, actual);
-        }
-
-        @Test
-        public void noArgument() {
-            // given/when
-            String actual = getCompileOutput(
-                    "()"
-                            .substring(1),
-                    CompilationEngine::compileExpressionList
-            );
-            String expected = """
-                    <expressionList>
                     </expressionList>
                     """;
 
