@@ -34,6 +34,36 @@ public class CompilationEngine {
     }
 
     public void compileStatements() {
+        printWriter.println("<statements>");
+        while (jackTokenizer.hasMoreTokens()) {
+            if (jackTokenizer.tokenType() == TokenType.KEYWORD) {
+                switch (jackTokenizer.keyword()) {
+                    case LET:
+                        compileLet();
+                        break;
+                    case RETURN:
+                        compileReturn();
+                        break;
+                    case DO:
+                        compileDo();
+                        break;
+                    case IF:
+                        compileIf();
+                        break;
+                    case WHILE:
+                        compileWhile();
+                        break;
+                    default:
+                        throw new RuntimeException("Statement kind keyword expected but found: " + jackTokenizer.keyword());
+                }
+                jackTokenizer.advance();
+            } else {
+                break;
+            }
+        }
+        assert jackTokenizer.symbol() == '}';
+        jackTokenizer.retreat();
+        printWriter.println("</statements>");
     }
 
     /**

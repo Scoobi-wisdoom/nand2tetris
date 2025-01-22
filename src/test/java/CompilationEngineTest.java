@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -659,6 +660,70 @@ class CompilationEngineTest {
                     </doStatement>
                     """;
 
+            Assertions.assertEquals(expected, actual);
+        }
+    }
+
+    @Nested
+    class CompileStatements {
+        @Test
+        @DisplayName("statements should end before '}'.")
+        public void statements() {
+            // given
+            String jackCode = """
+                    {
+                        let game = game;
+                        do game.run();
+                        do game.dispose();
+                        return;
+                    }
+                    """.substring(1);
+            String expected = """
+                    <statements>
+                    <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> game </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                    <term>
+                    <identifier> game </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </letStatement>
+                    <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> game </identifier>
+                    <symbol> . </symbol>
+                    <identifier> run </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                    </doStatement>
+                    <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> game </identifier>
+                    <symbol> . </symbol>
+                    <identifier> dispose </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                    </doStatement>
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    </statements>
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode, CompilationEngine::compileStatements);
+
+            // then
             Assertions.assertEquals(expected, actual);
         }
     }
