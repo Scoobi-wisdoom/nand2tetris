@@ -926,4 +926,65 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class CompileSubroutineBody {
+        @Test
+        public void compileSubroutineBody() {
+            // given
+            String jackCode = """
+                    {
+                        var boolean b;
+                        if (b) {
+                        }
+                        else {
+                        }
+                        return;
+                    }
+                    """;
+            String expected = """
+                    <subroutineBody>
+                    <symbol> { </symbol>
+                    <varDec>
+                    <keyword> var </keyword>
+                    <keyword> boolean </keyword>
+                    <identifier> b </identifier>
+                    <symbol> ; </symbol>
+                    </varDec>
+                    <statements>
+                    <ifStatement>
+                    <keyword> if </keyword>
+                    <symbol> ( </symbol>
+                    <expression>
+                    <term>
+                    <identifier> b </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                    <symbol> { </symbol>
+                    <statements>
+                    </statements>
+                    <symbol> } </symbol>
+                    <keyword> else </keyword>
+                    <symbol> { </symbol>
+                    <statements>
+                    </statements>
+                    <symbol> } </symbol>
+                    </ifStatement>
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    </statements>
+                    <symbol> } </symbol>
+                    </subroutineBody>
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode, CompilationEngine::compileSubroutineBody);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }

@@ -45,6 +45,23 @@ public class CompilationEngine {
     }
 
     public void compileSubroutineBody() {
+        printWriter.println("<subroutineBody>");
+        assert jackTokenizer.symbol() == '{';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+
+        while (jackTokenizer.hasMoreTokens()) {
+            jackTokenizer.advance();
+            if (jackTokenizer.tokenType() == TokenType.KEYWORD && jackTokenizer.keyword() == Keyword.VAR) {
+                compileVarDec();
+            } else {
+                compileStatements();
+                jackTokenizer.advance();
+            }
+        }
+        assert jackTokenizer.symbol() == '}';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+
+        printWriter.println("</subroutineBody>");
     }
 
     public void compileVarDec() {
