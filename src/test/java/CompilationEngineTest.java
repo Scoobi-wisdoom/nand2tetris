@@ -870,4 +870,60 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class CompileVarDec {
+        @Test
+        public void primitive() {
+            // given/when
+            String actual = getCompileOutput("var int length;", CompilationEngine::compileVarDec);
+            String expected = """
+                    <varDec>
+                    <keyword> var </keyword>
+                    <keyword> int </keyword>
+                    <identifier> length </identifier>
+                    <symbol> ; </symbol>
+                    </varDec>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void primitives() {
+            // given/when
+            String actual = getCompileOutput("var int i, sum;", CompilationEngine::compileVarDec);
+            String expected = """
+                    <varDec>
+                    <keyword> var </keyword>
+                    <keyword> int </keyword>
+                    <identifier> i </identifier>
+                    <symbol> , </symbol>
+                    <identifier> sum </identifier>
+                    <symbol> ; </symbol>
+                    </varDec>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void array() {
+            // given/when
+            String actual = getCompileOutput("var Array a;", CompilationEngine::compileVarDec);
+            String expected = """
+                    <varDec>
+                    <keyword> var </keyword>
+                    <identifier> Array </identifier>
+                    <identifier> a </identifier>
+                    <symbol> ; </symbol>
+                    </varDec>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }
