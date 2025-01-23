@@ -843,4 +843,31 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class CompileParameterList {
+        @Test
+        public void parameterList() {
+            // given/when
+            String actual = getCompileOutput(
+                    "(int Ax, int Ay, int Asize)".substring(1),
+                    CompilationEngine::compileParameterList
+            );
+            String expected = """
+                    <parameterList>
+                    <keyword> int </keyword>
+                    <identifier> Ax </identifier>
+                    <symbol> , </symbol>
+                    <keyword> int </keyword>
+                    <identifier> Ay </identifier>
+                    <symbol> , </symbol>
+                    <keyword> int </keyword>
+                    <identifier> Asize </identifier>
+                    </parameterList>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }

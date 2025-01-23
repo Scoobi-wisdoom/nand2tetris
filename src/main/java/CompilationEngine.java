@@ -25,6 +25,23 @@ public class CompilationEngine {
     }
 
     public void compileParameterList() {
+        printWriter.println("<parameterList>");
+        while (jackTokenizer.hasMoreTokens()) {
+            if (jackTokenizer.tokenType() == TokenType.SYMBOL && jackTokenizer.symbol() == ')') {
+                jackTokenizer.retreat();
+                break;
+            }
+
+            printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+            jackTokenizer.advance();
+            printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+            jackTokenizer.advance();
+            if (jackTokenizer.symbol() == ',') {
+                printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                jackTokenizer.advance();
+            }
+        }
+        printWriter.println("</parameterList>");
     }
 
     public void compileSubroutineBody() {
@@ -34,7 +51,7 @@ public class CompilationEngine {
     }
 
     /**
-     * Called only if and only if the previous token is '{'.
+     * Called only if the previous token is '{'.
      */
     public void compileStatements() {
         printWriter.println("<statements>");
