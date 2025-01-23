@@ -16,6 +16,40 @@ public class CompilationEngine {
     }
 
     public void compileClass() {
+        printWriter.println("<class>");
+
+        assert jackTokenizer.keyword() == Keyword.CLASS;
+        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+        jackTokenizer.advance();
+        printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+        jackTokenizer.advance();
+
+        assert jackTokenizer.symbol() == '{';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+
+        while (jackTokenizer.hasMoreTokens()) {
+            jackTokenizer.advance();
+            if (jackTokenizer.tokenType() == TokenType.SYMBOL && jackTokenizer.symbol() == '}') break;
+
+            switch (jackTokenizer.keyword()) {
+                case STATIC,
+                     FIELD:
+                    compileClassVarDec();
+                    break;
+                case CONSTRUCTOR,
+                     METHOD,
+                     FUNCTION:
+                    compileSubroutine();
+                    break;
+                default:
+                    throw new RuntimeException("compileClass failed with: " + jackTokenizer.keyword());
+            }
+        }
+
+        assert jackTokenizer.symbol() == '}';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+
+        printWriter.println("</class>");
     }
 
     public void compileClassVarDec() {
@@ -123,6 +157,7 @@ public class CompilationEngine {
             } else {
                 compileStatements();
                 jackTokenizer.advance();
+                break;
             }
         }
         assert jackTokenizer.symbol() == '}';
