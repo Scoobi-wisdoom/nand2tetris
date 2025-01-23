@@ -994,12 +994,12 @@ class CompilationEngineTest {
         public void constructor() {
             // given
             String jackCode = """
-                   constructor SquareGame new() {
-                        let square = square;
-                        let direction = direction;
-                        return square;
-                   }
-                   """;
+                    constructor SquareGame new() {
+                         let square = square;
+                         let direction = direction;
+                         return square;
+                    }
+                    """;
             String expected = """
                     <subroutineDec>
                     <keyword> constructor </keyword>
@@ -1060,48 +1060,48 @@ class CompilationEngineTest {
         public void method() {
             // given
             String jackCode = """
-                method void dispose() {
-                    do Memory.deAlloc(this);
-                    return;
-                }
-                """;
+                    method void dispose() {
+                        do Memory.deAlloc(this);
+                        return;
+                    }
+                    """;
             String expected = """
-                <subroutineDec>
-                <keyword> method </keyword>
-                <keyword> void </keyword>
-                <identifier> dispose </identifier>
-                <symbol> ( </symbol>
-                <parameterList>
-                </parameterList>
-                <symbol> ) </symbol>
-                <subroutineBody>
-                <symbol> { </symbol>
-                <statements>
-                <doStatement>
-                <keyword> do </keyword>
-                <identifier> Memory </identifier>
-                <symbol> . </symbol>
-                <identifier> deAlloc </identifier>
-                <symbol> ( </symbol>
-                <expressionList>
-                <expression>
-                <term>
-                <keyword> this </keyword>
-                </term>
-                </expression>
-                </expressionList>
-                <symbol> ) </symbol>
-                <symbol> ; </symbol>
-                </doStatement>
-                <returnStatement>
-                <keyword> return </keyword>
-                <symbol> ; </symbol>
-                </returnStatement>
-                </statements>
-                <symbol> } </symbol>
-                </subroutineBody>
-                </subroutineDec>
-                """;
+                    <subroutineDec>
+                    <keyword> method </keyword>
+                    <keyword> void </keyword>
+                    <identifier> dispose </identifier>
+                    <symbol> ( </symbol>
+                    <parameterList>
+                    </parameterList>
+                    <symbol> ) </symbol>
+                    <subroutineBody>
+                    <symbol> { </symbol>
+                    <statements>
+                    <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> Memory </identifier>
+                    <symbol> . </symbol>
+                    <identifier> deAlloc </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    <expression>
+                    <term>
+                    <keyword> this </keyword>
+                    </term>
+                    </expression>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                    </doStatement>
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    </statements>
+                    <symbol> } </symbol>
+                    </subroutineBody>
+                    </subroutineDec>
+                    """;
 
             // when
             String actual = getCompileOutput(jackCode, CompilationEngine::compileSubroutine);
@@ -1114,77 +1114,146 @@ class CompilationEngineTest {
         public void function() {
             // given
             String jackCode = """
-                function void main() {
-                    var SquareGame game;
-                    let game = game;
-                    do game.run();
-                    do game.dispose();
-                    return;
-                }
-                """;
+                    function void main() {
+                        var SquareGame game;
+                        let game = game;
+                        do game.run();
+                        do game.dispose();
+                        return;
+                    }
+                    """;
             String expected = """
-                <subroutineDec>
-                <keyword> function </keyword>
-                <keyword> void </keyword>
-                <identifier> main </identifier>
-                <symbol> ( </symbol>
-                <parameterList>
-                </parameterList>
-                <symbol> ) </symbol>
-                <subroutineBody>
-                <symbol> { </symbol>
-                <varDec>
-                <keyword> var </keyword>
-                <identifier> SquareGame </identifier>
-                <identifier> game </identifier>
-                <symbol> ; </symbol>
-                </varDec>
-                <statements>
-                <letStatement>
-                <keyword> let </keyword>
-                <identifier> game </identifier>
-                <symbol> = </symbol>
-                <expression>
-                <term>
-                <identifier> game </identifier>
-                </term>
-                </expression>
-                <symbol> ; </symbol>
-                </letStatement>
-                <doStatement>
-                <keyword> do </keyword>
-                <identifier> game </identifier>
-                <symbol> . </symbol>
-                <identifier> run </identifier>
-                <symbol> ( </symbol>
-                <expressionList>
-                </expressionList>
-                <symbol> ) </symbol>
-                <symbol> ; </symbol>
-                </doStatement>
-                <doStatement>
-                <keyword> do </keyword>
-                <identifier> game </identifier>
-                <symbol> . </symbol>
-                <identifier> dispose </identifier>
-                <symbol> ( </symbol>
-                <expressionList>
-                </expressionList>
-                <symbol> ) </symbol>
-                <symbol> ; </symbol>
-                </doStatement>
-                <returnStatement>
-                <keyword> return </keyword>
-                <symbol> ; </symbol>
-                </returnStatement>
-                </statements>
-                <symbol> } </symbol>
-                </subroutineBody>
-                </subroutineDec>
-                """;
+                    <subroutineDec>
+                    <keyword> function </keyword>
+                    <keyword> void </keyword>
+                    <identifier> main </identifier>
+                    <symbol> ( </symbol>
+                    <parameterList>
+                    </parameterList>
+                    <symbol> ) </symbol>
+                    <subroutineBody>
+                    <symbol> { </symbol>
+                    <varDec>
+                    <keyword> var </keyword>
+                    <identifier> SquareGame </identifier>
+                    <identifier> game </identifier>
+                    <symbol> ; </symbol>
+                    </varDec>
+                    <statements>
+                    <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> game </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                    <term>
+                    <identifier> game </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </letStatement>
+                    <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> game </identifier>
+                    <symbol> . </symbol>
+                    <identifier> run </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                    </doStatement>
+                    <doStatement>
+                    <keyword> do </keyword>
+                    <identifier> game </identifier>
+                    <symbol> . </symbol>
+                    <identifier> dispose </identifier>
+                    <symbol> ( </symbol>
+                    <expressionList>
+                    </expressionList>
+                    <symbol> ) </symbol>
+                    <symbol> ; </symbol>
+                    </doStatement>
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    </statements>
+                    <symbol> } </symbol>
+                    </subroutineBody>
+                    </subroutineDec>
+                    """;
 
             // when
             String actual = getCompileOutput(jackCode, CompilationEngine::compileSubroutine);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
+
+    @Nested
+    class CompileClassVarDec {
+        @Test
+        public void primitive() {
+            // given/when
+            String staticActual = getCompileOutput("static boolean test;", CompilationEngine::compileClassVarDec);
+            String staticExpected = """
+                    <classVarDec>
+                    <keyword> static </keyword>
+                    <keyword> boolean </keyword>
+                    <identifier> test </identifier>
+                    <symbol> ; </symbol>
+                    </classVarDec>
+                    """;
+
+            String fieldActual = getCompileOutput("field int size;", CompilationEngine::compileClassVarDec);
+            String fieldExpected = """
+                    <classVarDec>
+                    <keyword> field </keyword>
+                    <keyword> int </keyword>
+                    <identifier> size </identifier>
+                    <symbol> ; </symbol>
+                    </classVarDec>
+                    """;
+
+            // then
+            Assertions.assertAll(
+                    () -> Assertions.assertEquals(staticExpected, staticActual),
+                    () -> Assertions.assertEquals(fieldExpected, fieldActual)
+            );
+        }
+
+        @Test
+        public void primitives() {
+            // given/when
+            String actual = getCompileOutput("field int x, y;", CompilationEngine::compileClassVarDec);
+            String expected = """
+                    <classVarDec>
+                    <keyword> field </keyword>
+                    <keyword> int </keyword>
+                    <identifier> x </identifier>
+                    <symbol> , </symbol>
+                    <identifier> y </identifier>
+                    <symbol> ; </symbol>
+                    </classVarDec>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void otherClass() {
+            // given/when
+            String actual = getCompileOutput("field Square square;", CompilationEngine::compileClassVarDec);
+            String expected = """
+                    <classVarDec>
+                    <keyword> field </keyword>
+                    <identifier> Square </identifier>
+                    <identifier> square </identifier>
+                    <symbol> ; </symbol>
+                    </classVarDec>
+                    """;
 
             // then
             Assertions.assertEquals(expected, actual);

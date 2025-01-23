@@ -19,6 +19,41 @@ public class CompilationEngine {
     }
 
     public void compileClassVarDec() {
+        printWriter.println("<classVarDec>");
+
+        assert jackTokenizer.keyword() == Keyword.STATIC ||
+                jackTokenizer.keyword() == Keyword.FIELD;
+        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+        jackTokenizer.advance();
+        switch (jackTokenizer.tokenType()) {
+            case KEYWORD:
+                printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+                break;
+            case IDENTIFIER:
+                printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+                break;
+            default:
+                throw new RuntimeException("Either keyword or identifier tokenType expected but found: " + jackTokenizer.tokenType());
+        }
+
+        whileLoop:
+        while (jackTokenizer.hasMoreTokens()) {
+            jackTokenizer.advance();
+            printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+            jackTokenizer.advance();
+            switch (jackTokenizer.symbol()) {
+                case ',':
+                    printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                    break;
+                case ';':
+                    printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                    break whileLoop;
+                default:
+                    throw new RuntimeException("Either ',' or ';' expected but found: " + jackTokenizer.symbol());
+            }
+        }
+
+        printWriter.println("</classVarDec>");
     }
 
     public void compileSubroutine() {
