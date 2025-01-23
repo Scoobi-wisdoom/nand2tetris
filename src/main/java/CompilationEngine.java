@@ -146,9 +146,34 @@ public class CompilationEngine {
     }
 
     /**
-     * while statement := `if`, `(expression)`, `{statements}`
+     * while statement := `while`, `(expression)`, `{statements}`
      */
     public void compileWhile() {
+        printWriter.println("<whileStatement>");
+
+        assert jackTokenizer.keyword() == Keyword.WHILE;
+        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+        jackTokenizer.advance();
+
+        assert jackTokenizer.symbol() == '(';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+        compileExpression();
+        jackTokenizer.advance();
+        assert jackTokenizer.symbol() == ')';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+
+        assert jackTokenizer.symbol() == '{';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+        compileStatements();
+        jackTokenizer.advance();
+
+        assert jackTokenizer.symbol() == '}';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+
+        printWriter.println("</whileStatement>");
     }
 
     public void compileDo() {

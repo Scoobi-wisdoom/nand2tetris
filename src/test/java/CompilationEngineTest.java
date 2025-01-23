@@ -741,6 +741,46 @@ class CompilationEngineTest {
     }
 
     @Nested
+    class CompileWhile {
+        @Test
+        public void compileWhile() {
+            // given/when
+            String actual = getCompileOutput("while (~(key = 0)) {}", CompilationEngine::compileWhile);
+            String expected = """
+                    <whileStatement>
+                    <keyword> while </keyword>
+                    <symbol> ( </symbol>
+                    <expression>
+                    <term>
+                    <symbol> ~ </symbol>
+                    <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                    <term>
+                    <identifier> key </identifier>
+                    </term>
+                    <symbol> = </symbol>
+                    <term>
+                    <integerConstant> 0 </integerConstant>
+                    </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                    </term>
+                    </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                    <symbol> { </symbol>
+                    <statements>
+                    </statements>
+                    <symbol> } </symbol>
+                    </whileStatement>
+                    """;
+
+            Assertions.assertEquals(expected, actual);
+        }
+    }
+
+    @Nested
     class CompileStatements {
         @Test
         @DisplayName("statements should end before '}'.")
