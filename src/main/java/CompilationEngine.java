@@ -33,6 +33,9 @@ public class CompilationEngine {
     public void compileVarDec() {
     }
 
+    /**
+     * Called only if and only if the previous token is '{'.
+     */
     public void compileStatements() {
         printWriter.println("<statements>");
         while (jackTokenizer.hasMoreTokens()) {
@@ -101,6 +104,45 @@ public class CompilationEngine {
      * if statement := `if`, `(expression)`, `{statements}`
      */
     public void compileIf() {
+        printWriter.println("<ifStatement>");
+
+        assert jackTokenizer.keyword() == Keyword.IF;
+        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+        jackTokenizer.advance();
+        assert jackTokenizer.symbol() == '(';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+        compileExpression();
+        jackTokenizer.advance();
+        assert jackTokenizer.symbol() == ')';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+        assert jackTokenizer.symbol() == '{';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+        compileStatements();
+        jackTokenizer.advance();
+        assert jackTokenizer.symbol() == '}';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+
+        if (jackTokenizer.hasMoreTokens()) {
+            jackTokenizer.advance();
+            if (jackTokenizer.tokenType() == TokenType.KEYWORD && jackTokenizer.keyword() == Keyword.ELSE) {
+                printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+                jackTokenizer.advance();
+                assert jackTokenizer.symbol() == '{';
+                printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                jackTokenizer.advance();
+                compileStatements();
+                jackTokenizer.advance();
+                assert jackTokenizer.symbol() == '}';
+                printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+            } else {
+                jackTokenizer.retreat();
+            }
+        }
+
+        printWriter.println("</ifStatement>");
     }
 
     /**

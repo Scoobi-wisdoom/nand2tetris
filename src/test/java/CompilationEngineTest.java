@@ -665,6 +665,82 @@ class CompilationEngineTest {
     }
 
     @Nested
+    class CompileIf {
+        @Test
+        public void compileIf() {
+            // given/when
+            String actual = getCompileOutput("if (key) { let exit = exit; }", CompilationEngine::compileIf);
+            String expected = """
+                    <ifStatement>
+                    <keyword> if </keyword>
+                    <symbol> ( </symbol>
+                    <expression>
+                    <term>
+                    <identifier> key </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                    <symbol> { </symbol>
+                    <statements>
+                    <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> exit </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                    <term>
+                    <identifier> exit </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </letStatement>
+                    </statements>
+                    <symbol> } </symbol>
+                    </ifStatement>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void compileIfElse() {
+            // given
+            String jackCode = """
+                    if (b) {
+                    } else {
+                    }
+                    """;
+            String expected = """
+                    <ifStatement>
+                    <keyword> if </keyword>
+                    <symbol> ( </symbol>
+                    <expression>
+                    <term>
+                    <identifier> b </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                    <symbol> { </symbol>
+                    <statements>
+                    </statements>
+                    <symbol> } </symbol>
+                    <keyword> else </keyword>
+                    <symbol> { </symbol>
+                    <statements>
+                    </statements>
+                    <symbol> } </symbol>
+                    </ifStatement>
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode, CompilationEngine::compileIf);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
+
+    @Nested
     class CompileStatements {
         @Test
         @DisplayName("statements should end before '}'.")
