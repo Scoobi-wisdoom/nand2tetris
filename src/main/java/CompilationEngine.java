@@ -22,6 +22,38 @@ public class CompilationEngine {
     }
 
     public void compileSubroutine() {
+        printWriter.println("<subroutineDec>");
+
+        assert jackTokenizer.keyword() == Keyword.CONSTRUCTOR ||
+                jackTokenizer.keyword() == Keyword.METHOD ||
+                jackTokenizer.keyword() == Keyword.FUNCTION;
+        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+        jackTokenizer.advance();
+        switch (jackTokenizer.tokenType()) {
+            case KEYWORD:
+                printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+                break;
+            case IDENTIFIER:
+                printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+                break;
+            default:
+                throw new RuntimeException("Either keyword or identifier tokenType expected but found: " + jackTokenizer.tokenType());
+        }
+        jackTokenizer.advance();
+        printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+        jackTokenizer.advance();
+
+        assert jackTokenizer.symbol() == '(';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+        compileParameterList();
+        jackTokenizer.advance();
+        assert jackTokenizer.symbol() == ')';
+        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+        jackTokenizer.advance();
+        compileSubroutineBody();
+
+        printWriter.println("</subroutineDec>");
     }
 
     public void compileParameterList() {

@@ -987,4 +987,207 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class CompileSubroutine {
+        @Test
+        public void constructor() {
+            // given
+            String jackCode = """
+                   constructor SquareGame new() {
+                        let square = square;
+                        let direction = direction;
+                        return square;
+                   }
+                   """;
+            String expected = """
+                    <subroutineDec>
+                    <keyword> constructor </keyword>
+                    <identifier> SquareGame </identifier>
+                    <identifier> new </identifier>
+                    <symbol> ( </symbol>
+                    <parameterList>
+                    </parameterList>
+                    <symbol> ) </symbol>
+                    <subroutineBody>
+                    <symbol> { </symbol>
+                    <statements>
+                    <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> square </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                    <term>
+                    <identifier> square </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </letStatement>
+                    <letStatement>
+                    <keyword> let </keyword>
+                    <identifier> direction </identifier>
+                    <symbol> = </symbol>
+                    <expression>
+                    <term>
+                    <identifier> direction </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </letStatement>
+                    <returnStatement>
+                    <keyword> return </keyword>
+                    <expression>
+                    <term>
+                    <identifier> square </identifier>
+                    </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                    </returnStatement>
+                    </statements>
+                    <symbol> } </symbol>
+                    </subroutineBody>
+                    </subroutineDec>
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode, CompilationEngine::compileSubroutine);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void method() {
+            // given
+            String jackCode = """
+                method void dispose() {
+                    do Memory.deAlloc(this);
+                    return;
+                }
+                """;
+            String expected = """
+                <subroutineDec>
+                <keyword> method </keyword>
+                <keyword> void </keyword>
+                <identifier> dispose </identifier>
+                <symbol> ( </symbol>
+                <parameterList>
+                </parameterList>
+                <symbol> ) </symbol>
+                <subroutineBody>
+                <symbol> { </symbol>
+                <statements>
+                <doStatement>
+                <keyword> do </keyword>
+                <identifier> Memory </identifier>
+                <symbol> . </symbol>
+                <identifier> deAlloc </identifier>
+                <symbol> ( </symbol>
+                <expressionList>
+                <expression>
+                <term>
+                <keyword> this </keyword>
+                </term>
+                </expression>
+                </expressionList>
+                <symbol> ) </symbol>
+                <symbol> ; </symbol>
+                </doStatement>
+                <returnStatement>
+                <keyword> return </keyword>
+                <symbol> ; </symbol>
+                </returnStatement>
+                </statements>
+                <symbol> } </symbol>
+                </subroutineBody>
+                </subroutineDec>
+                """;
+
+            // when
+            String actual = getCompileOutput(jackCode, CompilationEngine::compileSubroutine);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void function() {
+            // given
+            String jackCode = """
+                function void main() {
+                    var SquareGame game;
+                    let game = game;
+                    do game.run();
+                    do game.dispose();
+                    return;
+                }
+                """;
+            String expected = """
+                <subroutineDec>
+                <keyword> function </keyword>
+                <keyword> void </keyword>
+                <identifier> main </identifier>
+                <symbol> ( </symbol>
+                <parameterList>
+                </parameterList>
+                <symbol> ) </symbol>
+                <subroutineBody>
+                <symbol> { </symbol>
+                <varDec>
+                <keyword> var </keyword>
+                <identifier> SquareGame </identifier>
+                <identifier> game </identifier>
+                <symbol> ; </symbol>
+                </varDec>
+                <statements>
+                <letStatement>
+                <keyword> let </keyword>
+                <identifier> game </identifier>
+                <symbol> = </symbol>
+                <expression>
+                <term>
+                <identifier> game </identifier>
+                </term>
+                </expression>
+                <symbol> ; </symbol>
+                </letStatement>
+                <doStatement>
+                <keyword> do </keyword>
+                <identifier> game </identifier>
+                <symbol> . </symbol>
+                <identifier> run </identifier>
+                <symbol> ( </symbol>
+                <expressionList>
+                </expressionList>
+                <symbol> ) </symbol>
+                <symbol> ; </symbol>
+                </doStatement>
+                <doStatement>
+                <keyword> do </keyword>
+                <identifier> game </identifier>
+                <symbol> . </symbol>
+                <identifier> dispose </identifier>
+                <symbol> ( </symbol>
+                <expressionList>
+                </expressionList>
+                <symbol> ) </symbol>
+                <symbol> ; </symbol>
+                </doStatement>
+                <returnStatement>
+                <keyword> return </keyword>
+                <symbol> ; </symbol>
+                </returnStatement>
+                </statements>
+                <symbol> } </symbol>
+                </subroutineBody>
+                </subroutineDec>
+                """;
+
+            // when
+            String actual = getCompileOutput(jackCode, CompilationEngine::compileSubroutine);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }
