@@ -553,7 +553,6 @@ public class CompilationEngine {
         return argumentCount;
     }
 
-    // Custom method for testing.
     public void close() {
         printWriter.close();
     }
