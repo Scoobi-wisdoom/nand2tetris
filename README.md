@@ -176,9 +176,17 @@ D=A
 M=D
 ```
 
+## Week 5
+> In its plainest form, a computer is a stream of characters stored in a text file.
+
+Compliation consists of two steps of syntax analysis and code generation. Syntax analysis includes tokennizing and parsing. In the process of tokenizing, texts are classified into tokens.
+
+Unlike a VMTranslator or an assembler, a compiler can be implemented in as high a level language as the source language itself. For example, the Java compiler is written in Java, and Kotlin's compiler is written in Kotlin.
+
 # projects done in different repositories
 - [assembler](https://github.com/Scoobi-wisdoom/assembler)
 - [VMTranslator](https://github.com/Scoobi-wisdoom/VMTranslator)
+- [compiler](https://github.com/Scoobi-wisdoom/compiler)
 
 # References
 -  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
