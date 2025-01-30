@@ -1,3 +1,4 @@
+package syntax.analyzer;
 
 public enum TokenType {
     KEYWORD,

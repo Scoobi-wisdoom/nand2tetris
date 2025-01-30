@@ -1,3 +1,5 @@
+package syntax.analyzer;
+
 import java.util.List;
 
 public enum Keyword {

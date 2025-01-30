@@ -1,3 +1,9 @@
+package code.generator;
+
+import syntax.analyzer.JackTokenizer;
+import syntax.analyzer.Keyword;
+import syntax.analyzer.TokenType;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
