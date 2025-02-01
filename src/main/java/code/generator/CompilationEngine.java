@@ -26,16 +26,12 @@ public class CompilationEngine {
     }
 
     public void compileClass() {
-//        printWriter.println("<class>");
-
         assert jackTokenizer.keyword() == Keyword.CLASS;
-//        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
         jackTokenizer.advance();
-//        printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+        currentKlassName = jackTokenizer.identifier();
         jackTokenizer.advance();
 
         assert jackTokenizer.symbol() == '{';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
 
         while (jackTokenizer.hasMoreTokens()) {
             jackTokenizer.advance();
@@ -65,41 +61,39 @@ public class CompilationEngine {
     }
 
     private void compileClassVarDec() {
-//        printWriter.println("<classVarDec>");
-
-        assert jackTokenizer.keyword() == Keyword.STATIC ||
-                jackTokenizer.keyword() == Keyword.FIELD;
-//        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+        SymbolKind symbolKind = switch (jackTokenizer.keyword()) {
+            case STATIC:
+                yield SymbolKind.STATIC;
+            case FIELD:
+                yield SymbolKind.FIELD;
+            default:
+                throw new RuntimeException("Class SymbolTable does no allow keyword: " + jackTokenizer.keyword());
+        };
         jackTokenizer.advance();
-        switch (jackTokenizer.tokenType()) {
+
+        String symbolType = switch (jackTokenizer.tokenType()) {
             case KEYWORD:
-//                printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
-                break;
+                yield jackTokenizer.keyword().toString();
             case IDENTIFIER:
-//                printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
-                break;
+                yield jackTokenizer.identifier();
             default:
                 throw new RuntimeException("Either keyword or identifier tokenType expected but found: " + jackTokenizer.tokenType());
-        }
+        };
 
         whileLoop:
         while (jackTokenizer.hasMoreTokens()) {
             jackTokenizer.advance();
-//            printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+            klassSymbolTable.define(jackTokenizer.identifier(), symbolType, symbolKind);
             jackTokenizer.advance();
             switch (jackTokenizer.symbol()) {
                 case ',':
-//                    printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                     break;
                 case ';':
-//                    printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                     break whileLoop;
                 default:
                     throw new RuntimeException("Either ',' or ';' expected but found: " + jackTokenizer.symbol());
             }
         }
-
-//        printWriter.println("</classVarDec>");
     }
 
     private void compileSubroutine() {
