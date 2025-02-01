@@ -9,9 +9,11 @@ import java.io.OutputStream;
 
 public class CompilationEngine {
     private final JackTokenizer jackTokenizer;
+    private final VMWriter vmWriter;
 
     public CompilationEngine(InputStream inputStream, OutputStream outputStream) {
         this.jackTokenizer = new JackTokenizer(inputStream);
+        this.vmWriter = new VMWriter(outputStream);
         jackTokenizer.advance();
     }
 
@@ -50,6 +52,8 @@ public class CompilationEngine {
 //        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
 
 //        printWriter.println("</class>");
+
+        vmWriter.close();
     }
 
     private void compileClassVarDec() {
