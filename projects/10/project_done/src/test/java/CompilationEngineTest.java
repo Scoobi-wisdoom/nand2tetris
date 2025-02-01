@@ -869,6 +869,24 @@ class CompilationEngineTest {
             // then
             Assertions.assertEquals(expected, actual);
         }
+
+        @Test
+        public void list() {
+            // given/when
+            String actual = getCompileOutput(
+                    "(List cdr)".substring(1),
+                    CompilationEngine::compileParameterList
+            );
+            String expected = """
+                    <parameterList>
+                    <identifier> List </identifier>
+                    <identifier> cdr </identifier>
+                    </parameterList>
+                    """;
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
     }
 
     @Nested

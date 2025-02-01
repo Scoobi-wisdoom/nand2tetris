@@ -133,7 +133,16 @@ public class CompilationEngine {
                 break;
             }
 
-            printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+            assert jackTokenizer.tokenType() == TokenType.KEYWORD ||
+                    jackTokenizer.tokenType() == TokenType.IDENTIFIER;
+            switch (jackTokenizer.tokenType()) {
+                case KEYWORD:
+                    printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+                    break;
+                case IDENTIFIER:
+                    printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+                    break;
+            }
             jackTokenizer.advance();
             printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
             jackTokenizer.advance();
@@ -524,7 +533,7 @@ public class CompilationEngine {
      */
     public int compileExpressionList() {
         printWriter.println("<expressionList>");
-        int argumentCount = 0;
+        int expressionCount = 0;
         whileLoop:
         while (jackTokenizer.hasMoreTokens()) {
             if (jackTokenizer.tokenType() == TokenType.SYMBOL) {
@@ -535,13 +544,17 @@ public class CompilationEngine {
                         compileExpression();
                         break;
                     case ',':
-                        argumentCount++;
+                        if (expressionCount == 0) {
+                            expressionCount++;
+                        }
+                        expressionCount++;
                         printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                         jackTokenizer.advance();
                         compileExpression();
                         break;
                 }
             } else {
+                expressionCount++;
                 compileExpression();
             }
             jackTokenizer.advance();
@@ -550,7 +563,7 @@ public class CompilationEngine {
         assert jackTokenizer.symbol() == ')';
         jackTokenizer.retreat();
         printWriter.println("</expressionList>");
-        return argumentCount;
+        return expressionCount;
     }
 
     public void close() {
