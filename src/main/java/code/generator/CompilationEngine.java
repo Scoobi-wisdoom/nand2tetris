@@ -52,7 +52,7 @@ public class CompilationEngine {
 //        printWriter.println("</class>");
     }
 
-    public void compileClassVarDec() {
+    private void compileClassVarDec() {
 //        printWriter.println("<classVarDec>");
 
         assert jackTokenizer.keyword() == Keyword.STATIC ||
@@ -90,7 +90,7 @@ public class CompilationEngine {
 //        printWriter.println("</classVarDec>");
     }
 
-    public void compileSubroutine() {
+    private void compileSubroutine() {
 //        printWriter.println("<subroutineDec>");
 
         assert jackTokenizer.keyword() == Keyword.CONSTRUCTOR ||
@@ -125,7 +125,7 @@ public class CompilationEngine {
 //        printWriter.println("</subroutineDec>");
     }
 
-    public void compileParameterList() {
+    private void compileParameterList() {
 //        printWriter.println("<parameterList>");
         while (jackTokenizer.hasMoreTokens()) {
             if (jackTokenizer.tokenType() == TokenType.SYMBOL && jackTokenizer.symbol() == ')') {
@@ -145,7 +145,7 @@ public class CompilationEngine {
 //        printWriter.println("</parameterList>");
     }
 
-    public void compileSubroutineBody() {
+    private void compileSubroutineBody() {
 //        printWriter.println("<subroutineBody>");
         assert jackTokenizer.symbol() == '{';
 //        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
@@ -166,7 +166,7 @@ public class CompilationEngine {
 //        printWriter.println("</subroutineBody>");
     }
 
-    public void compileVarDec() {
+    private void compileVarDec() {
 //        printWriter.println("<varDec>");
         assert jackTokenizer.keyword() == Keyword.VAR;
 //        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
@@ -206,7 +206,7 @@ public class CompilationEngine {
     /**
      * Called only if the previous token is '{'.
      */
-    public void compileStatements() {
+    private void compileStatements() {
 //        printWriter.println("<statements>");
         while (jackTokenizer.hasMoreTokens()) {
             if (jackTokenizer.tokenType() == TokenType.KEYWORD) {
@@ -242,7 +242,7 @@ public class CompilationEngine {
     /**
      * let statement := `let`, `varName`, =, `expression`, and `;`
      */
-    public void compileLet() {
+    private void compileLet() {
 //        printWriter.println("<letStatement>");
         assert jackTokenizer.keyword() == Keyword.LET;
 //        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
@@ -273,7 +273,7 @@ public class CompilationEngine {
     /**
      * if statement := `if`, `(expression)`, `{statements}`
      */
-    public void compileIf() {
+    private void compileIf() {
 //        printWriter.println("<ifStatement>");
 
         assert jackTokenizer.keyword() == Keyword.IF;
@@ -318,7 +318,7 @@ public class CompilationEngine {
     /**
      * while statement := `while`, `(expression)`, `{statements}`
      */
-    public void compileWhile() {
+    private void compileWhile() {
 //        printWriter.println("<whileStatement>");
 
         assert jackTokenizer.keyword() == Keyword.WHILE;
@@ -346,7 +346,7 @@ public class CompilationEngine {
 //        printWriter.println("</whileStatement>");
     }
 
-    public void compileDo() {
+    private void compileDo() {
 //        printWriter.println("<doStatement>");
         assert jackTokenizer.keyword() == Keyword.DO;
 //        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
@@ -380,7 +380,7 @@ public class CompilationEngine {
 //        printWriter.println("</doStatement>");
     }
 
-    public void compileReturn() {
+    private void compileReturn() {
 //        printWriter.println("<returnStatement>");
         assert jackTokenizer.keyword() == Keyword.RETURN;
 //        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
@@ -399,7 +399,7 @@ public class CompilationEngine {
      * op: operation such as +, -, *, /, =, >, <, &, |
      * Inferred: `<term>` only exists between `<expression>` and `</expression>`.
      */
-    public void compileExpression() {
+    private void compileExpression() {
 //        printWriter.println("<expression>");
         compileTerm();
         while (jackTokenizer.hasMoreTokens()) {
@@ -437,7 +437,7 @@ public class CompilationEngine {
      * varName: a string not beginning with a digit
      * constant: a non-negative integer
      */
-    public void compileTerm() {
+    private void compileTerm() {
 //        printWriter.println("<term>");
         switch (jackTokenizer.tokenType()) {
             case IDENTIFIER:
@@ -522,7 +522,7 @@ public class CompilationEngine {
     /**
      * Implemented to return int value according to the textbook's requirements even though it is never used.
      */
-    public int compileExpressionList() {
+    private int compileExpressionList() {
 //        printWriter.println("<expressionList>");
         int argumentCount = 0;
         whileLoop:
