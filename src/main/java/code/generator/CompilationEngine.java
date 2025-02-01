@@ -7,13 +7,21 @@ import syntax.analyzer.TokenType;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static code.generator.SymbolTableLevel.KLASS;
+import static code.generator.SymbolTableLevel.SUBROUTINE;
+
 public class CompilationEngine {
     private final JackTokenizer jackTokenizer;
     private final VMWriter vmWriter;
+    private final SymbolTable klassSymbolTable;
+    private final SymbolTable subroutineSymbolTable;
+    private String currentKlassName = "";
 
     public CompilationEngine(InputStream inputStream, OutputStream outputStream) {
         this.jackTokenizer = new JackTokenizer(inputStream);
         this.vmWriter = new VMWriter(outputStream);
+        this.klassSymbolTable = new SymbolTable(KLASS);
+        this.subroutineSymbolTable = new SymbolTable(SUBROUTINE);
         jackTokenizer.advance();
     }
 
