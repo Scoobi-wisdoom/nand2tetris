@@ -564,4 +564,16 @@ public class CompilationEngine {
 //        printWriter.println("</expressionList>");
         return argumentCount;
     }
+
+    /**
+     * For testing purposes
+     */
+    SymbolTable getSymbolTable(SymbolTableLevel level) {
+        return switch (level) {
+            case KLASS:
+                yield klassSymbolTable;
+            case SUBROUTINE:
+                yield subroutineSymbolTable;
+        };
+    }
 }
