@@ -451,4 +451,96 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class Assignee {
+        @Test
+        public void field() {
+            // given
+            String jackCode = """
+                    class Bat {
+                       field int direction;
+                    
+                       method void setDirection(int Adirection) {
+                           let direction = Adirection;
+                           return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function Bat.setDirection 0
+                    push argument 0
+                    pop pointer 0
+                    push argument 1
+                    pop this 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void staticKind() {
+            // given
+            String jackCode = """
+                    class Bat {
+                       static int direction;
+                    
+                       method void setDirection(int Adirection) {
+                           let direction = Adirection;
+                           return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function Bat.setDirection 0
+                    push argument 0
+                    pop pointer 0
+                    push argument 1
+                    pop static 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void var() {
+            // given
+            String jackCode = """
+                    class Main {
+                        method void run() {
+                           var int exit;
+                           let exit = 1;
+                           return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.run 1
+                    push argument 0
+                    pop pointer 0
+                    push constant 1
+                    pop local 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }

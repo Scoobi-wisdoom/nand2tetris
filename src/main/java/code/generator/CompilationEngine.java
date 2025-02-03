@@ -252,30 +252,28 @@ public class CompilationEngine {
      * let statement := `let`, `varName`, =, `expression`, and `;`
      */
     private void compileLet() {
-//        printWriter.println("<letStatement>");
         assert jackTokenizer.keyword() == Keyword.LET;
-//        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
         jackTokenizer.advance();
-//        printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+
+        int assigneeIndex = getIndexFromSymbolTables(jackTokenizer.identifier());
+        MemorySegment assigneeMemorySegment = getMemorySegmentFromSymbolTables(jackTokenizer.identifier());
+
         jackTokenizer.advance();
         if (jackTokenizer.tokenType() == TokenType.SYMBOL && jackTokenizer.symbol() == '[') {
-//            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
             jackTokenizer.advance();
             compileExpression();
             jackTokenizer.advance();
             assert jackTokenizer.symbol() == ']';
-//            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
             jackTokenizer.advance();
         }
 
         assert jackTokenizer.symbol() == '=';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
         jackTokenizer.advance();
         compileExpression();
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == ';';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-//        printWriter.println("</letStatement>");
+
+        vmWriter.writePop(assigneeMemorySegment, assigneeIndex);
     }
 
 
