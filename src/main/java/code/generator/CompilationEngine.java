@@ -11,6 +11,7 @@ import static code.generator.MemorySegment.ARGUMENT;
 import static code.generator.MemorySegment.CONSTANT;
 import static code.generator.MemorySegment.POINTER;
 import static code.generator.SymbolKind.ARG;
+import static code.generator.SymbolKind.NONE;
 import static code.generator.SymbolKind.VAR;
 import static code.generator.SymbolTableLevel.KLASS;
 import static code.generator.SymbolTableLevel.SUBROUTINE;
@@ -408,7 +409,6 @@ public class CompilationEngine {
      * Inferred: `<term>` only exists between `<expression>` and `</expression>`.
      */
     private void compileExpression() {
-//        printWriter.println("<expression>");
         compileTerm();
         while (jackTokenizer.hasMoreTokens()) {
             jackTokenizer.advance();
@@ -416,28 +416,35 @@ public class CompilationEngine {
                     jackTokenizer.tokenType() == TokenType.SYMBOL &&
                             TokenType.isOperationSymbol(jackTokenizer.symbol())
             ) {
-                switch (jackTokenizer.symbol()) {
-                    case '>':
-//                        printWriter.println("<symbol> &gt; </symbol>");
-                        break;
-                    case '<':
-//                        printWriter.println("<symbol> &lt; </symbol>");
-                        break;
-                    case '&':
-//                        printWriter.println("<symbol> &amp; </symbol>");
-                        break;
-                    default:
-//                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-                        break;
-                }
+                char operationSymbol = jackTokenizer.symbol();
                 jackTokenizer.advance();
                 compileTerm();
+
+                switch (operationSymbol) {
+                    case '+',
+                         '-',
+                         '&',
+                         '|',
+                         '<',
+                         '>',
+                         '=':
+                        ArithmeticCommand command = ArithmeticCommand.getCommand(operationSymbol);
+                        vmWriter.writeArithmetic(command);
+                        break;
+                    case '*':
+                        vmWriter.writeCall("Math.multiply", 2);
+                        break;
+                    case '/':
+                        vmWriter.writeCall("Math.divide", 2);
+                        break;
+                    default:
+                        throw new IllegalStateException("Not operation symbol: " + operationSymbol);
+                }
             } else {
                 jackTokenizer.retreat();
                 break;
             }
         }
-//        printWriter.println("</expression>");
     }
 
     /**
@@ -446,10 +453,11 @@ public class CompilationEngine {
      * constant: a non-negative integer
      */
     private void compileTerm() {
-//        printWriter.println("<term>");
         switch (jackTokenizer.tokenType()) {
             case IDENTIFIER:
-//                printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+                int index = getIndexFromSymbolTables(jackTokenizer.identifier());
+                MemorySegment memorySegment = getMemorySegmentFromSymbolTables(jackTokenizer.identifier());
+                vmWriter.writePush(memorySegment, index);
                 jackTokenizer.advance();
 
                 if (jackTokenizer.tokenType() == TokenType.SYMBOL) {
@@ -516,7 +524,7 @@ public class CompilationEngine {
                 }
                 break;
             case INT_CONST:
-//                printWriter.println("<integerConstant> " + jackTokenizer.intVal() + " </integerConstant>");
+                vmWriter.writePush(CONSTANT, jackTokenizer.intVal());
                 break;
             case STRING_CONST:
 //                printWriter.println("<stringConstant> " + jackTokenizer.stringVal() + " </stringConstant>");
@@ -525,6 +533,28 @@ public class CompilationEngine {
                 throw new RuntimeException("Not a term");
         }
 //        printWriter.println("</term>");
+    }
+
+    private MemorySegment getMemorySegmentFromSymbolTables(String name) {
+        MemorySegment memorySegment;
+        if (klassSymbolTable.kindOf(name) == NONE) {
+            memorySegment = subroutineSymbolTable.kindOf(name).getMemorySegment();
+        } else {
+            assert klassSymbolTable.kindOf(name) != NONE;
+            memorySegment = klassSymbolTable.kindOf(name).getMemorySegment();
+        }
+        return memorySegment;
+    }
+
+    private int getIndexFromSymbolTables(String name) {
+        int index;
+        if (klassSymbolTable.kindOf(name) == NONE) {
+            index = subroutineSymbolTable.indexOf(name);
+        } else {
+            assert klassSymbolTable.kindOf(name) != NONE;
+            index = klassSymbolTable.indexOf(name);
+        }
+        return index;
     }
 
     /**

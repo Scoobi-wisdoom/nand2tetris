@@ -223,4 +223,232 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class Operation {
+        @Test
+        public void multiply() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function int double(int a) {
+                        	return a * 2;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.double 0
+                    push argument 0
+                    push constant 2
+                    call Math.multiply 2
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void divide() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function int half(int a) {
+                        	return a / 2;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.half 0
+                    push argument 0
+                    push constant 2
+                    call Math.divide 2
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void add() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function int plus(int a) {
+                        	return a + 2;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.plus 0
+                    push argument 0
+                    push constant 2
+                    add
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void sub() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function int minus(int a) {
+                        	return a - 2;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.minus 0
+                    push argument 0
+                    push constant 2
+                    sub
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void eq() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function boolean equals(int a, int b) {
+                            return a = b;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.equals 0
+                    push argument 0
+                    push argument 1
+                    eq
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void gt() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function boolean greaterThan(int a) {
+                        	return a > 2;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.greaterThan 0
+                    push argument 0
+                    push constant 2
+                    gt
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void lt() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function boolean lessThan(int a) {
+                        	return a < 2;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.lessThan 0
+                    push argument 0
+                    push constant 2
+                    lt
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void and() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function int bitwiseAnd(int a, int b) {
+                            return a & b;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.bitwiseAnd 0
+                    push argument 0
+                    push argument 1
+                    and
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void or() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function int bitwiseOr(int a, int b) {
+                            return a | b;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.bitwiseOr 0
+                    push argument 0
+                    push argument 1
+                    or
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }
