@@ -543,4 +543,158 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class AssignedValue {
+        @Test
+        public void trueValue() {
+            // given
+            String jackCode = """
+                    class Main {
+                        method void run() {
+                           var boolean exit;
+                           let exit = true;
+                           return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.run 1
+                    push argument 0
+                    pop pointer 0
+                    push constant 0
+                    not
+                    pop local 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void falseValue() {
+            // given
+            String jackCode = """
+                    class Main {
+                        method void run() {
+                           var boolean exit;
+                           let exit = false;
+                           return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.run 1
+                    push argument 0
+                    pop pointer 0
+                    push constant 0
+                    pop local 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void nullValue() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function void more() {
+                           var String s;
+                           let s = null;
+                           return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.more 1
+                    push constant 0
+                    pop local 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void thisValue() {
+            // given
+            String jackCode = """
+                    class Main {
+                        method void print() {
+                            var List current;
+                            let current = this;
+                            return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.print 1
+                    push argument 0
+                    pop pointer 0
+                    push pointer 0
+                    pop local 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void string() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function void more() {
+                           var String s;
+                           let s = "abcd";
+                           return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.more 1
+                    push constant 4
+                    call String.new 1
+                    push constant 97
+                    call String.appendChar 2
+                    push constant 98
+                    call String.appendChar 2
+                    push constant 99
+                    call String.appendChar 2
+                    push constant 100
+                    call String.appendChar 2
+                    pop local 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }

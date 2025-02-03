@@ -7,6 +7,7 @@ import syntax.analyzer.TokenType;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static code.generator.ArithmeticCommand.NOT;
 import static code.generator.MemorySegment.ARGUMENT;
 import static code.generator.MemorySegment.CONSTANT;
 import static code.generator.MemorySegment.POINTER;
@@ -511,11 +512,16 @@ public class CompilationEngine {
                 break;
             case KEYWORD:
                 switch (jackTokenizer.keyword()) {
-                    case TRUE,
-                         FALSE,
-                         NULL,
-                         THIS:
-//                        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+                    case TRUE:
+                        vmWriter.writePush(CONSTANT, 0);
+                        vmWriter.writeArithmetic(NOT);
+                        break;
+                    case FALSE,
+                         NULL:
+                        vmWriter.writePush(CONSTANT, 0);
+                        break;
+                    case THIS:
+                        vmWriter.writePush(POINTER, 0);
                         break;
                     default:
                         throw new RuntimeException("Not an eligible keyword in a term: " + jackTokenizer.keyword());
@@ -525,7 +531,12 @@ public class CompilationEngine {
                 vmWriter.writePush(CONSTANT, jackTokenizer.intVal());
                 break;
             case STRING_CONST:
-//                printWriter.println("<stringConstant> " + jackTokenizer.stringVal() + " </stringConstant>");
+                vmWriter.writePush(CONSTANT, jackTokenizer.stringVal().length());
+                vmWriter.writeCall("String.new", 1);
+                for (int i = 0; i < jackTokenizer.stringVal().length(); i++) {
+                    vmWriter.writePush(CONSTANT, jackTokenizer.stringVal().charAt(i));
+                    vmWriter.writeCall("String.appendChar", 2);
+                }
                 break;
             default:
                 throw new RuntimeException("Not a term");
