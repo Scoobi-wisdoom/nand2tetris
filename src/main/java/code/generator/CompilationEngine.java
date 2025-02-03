@@ -7,6 +7,9 @@ import syntax.analyzer.TokenType;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static code.generator.MemorySegment.ARGUMENT;
+import static code.generator.MemorySegment.CONSTANT;
+import static code.generator.MemorySegment.POINTER;
 import static code.generator.SymbolKind.ARG;
 import static code.generator.SymbolKind.VAR;
 import static code.generator.SymbolTableLevel.KLASS;
@@ -18,6 +21,8 @@ public class CompilationEngine {
     private final SymbolTable klassSymbolTable;
     private final SymbolTable subroutineSymbolTable;
     private String currentKlassName = "";
+    private String currentFunctionName = "";
+    private boolean isMethod = false;
 
     public CompilationEngine(InputStream inputStream, OutputStream outputStream) {
         this.jackTokenizer = new JackTokenizer(inputStream);
@@ -102,10 +107,15 @@ public class CompilationEngine {
         assert jackTokenizer.keyword() == Keyword.CONSTRUCTOR ||
                 jackTokenizer.keyword() == Keyword.METHOD ||
                 jackTokenizer.keyword() == Keyword.FUNCTION;
+
         subroutineSymbolTable.reset();
         if (jackTokenizer.keyword() == Keyword.METHOD) {
             subroutineSymbolTable.define("this", currentKlassName, ARG);
+            isMethod = true;
+        } else {
+            isMethod = false;
         }
+
         jackTokenizer.advance();
         switch (jackTokenizer.tokenType()) {
             case KEYWORD,
@@ -115,6 +125,7 @@ public class CompilationEngine {
                 throw new RuntimeException("Either keyword or identifier tokenType expected but found: " + jackTokenizer.tokenType());
         }
         jackTokenizer.advance();
+        currentFunctionName = jackTokenizer.identifier();
         jackTokenizer.advance();
 
         assert jackTokenizer.symbol() == '(';
@@ -151,24 +162,24 @@ public class CompilationEngine {
     }
 
     private void compileSubroutineBody() {
-//        printWriter.println("<subroutineBody>");
         assert jackTokenizer.symbol() == '{';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
 
         while (jackTokenizer.hasMoreTokens()) {
             jackTokenizer.advance();
             if (jackTokenizer.tokenType() == TokenType.KEYWORD && jackTokenizer.keyword() == Keyword.VAR) {
                 compileVarDec();
             } else {
+                vmWriter.writeFunction(currentKlassName + "." + currentFunctionName, subroutineSymbolTable.varCount(VAR));
+                if (isMethod) {
+                    vmWriter.writePush(ARGUMENT, subroutineSymbolTable.indexOf("this"));
+                    vmWriter.writePop(POINTER, 0);
+                }
                 compileStatements();
                 jackTokenizer.advance();
                 break;
             }
         }
         assert jackTokenizer.symbol() == '}';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-
-//        printWriter.println("</subroutineBody>");
     }
 
     private void compileVarDec() {
@@ -378,17 +389,17 @@ public class CompilationEngine {
     }
 
     private void compileReturn() {
-//        printWriter.println("<returnStatement>");
         assert jackTokenizer.keyword() == Keyword.RETURN;
-//        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
         jackTokenizer.advance();
         if (jackTokenizer.tokenType() != TokenType.SYMBOL || jackTokenizer.symbol() != ';') {
             compileExpression();
             jackTokenizer.advance();
+        } else {
+            vmWriter.writePush(CONSTANT, 0);
         }
         assert jackTokenizer.symbol() == ';';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-//        printWriter.println("</returnStatement>");
+
+        vmWriter.writeReturn();
     }
 
     /**
@@ -520,8 +531,7 @@ public class CompilationEngine {
      * Implemented to return int value according to the textbook's requirements even though it is never used.
      */
     private int compileExpressionList() {
-//        printWriter.println("<expressionList>");
-        int argumentCount = 0;
+        int expressionCount = 0;
         whileLoop:
         while (jackTokenizer.hasMoreTokens()) {
             if (jackTokenizer.tokenType() == TokenType.SYMBOL) {
@@ -532,13 +542,13 @@ public class CompilationEngine {
                         compileExpression();
                         break;
                     case ',':
-                        argumentCount++;
-//                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                        expressionCount++;
                         jackTokenizer.advance();
                         compileExpression();
                         break;
                 }
             } else {
+                expressionCount++;
                 compileExpression();
             }
             jackTokenizer.advance();
@@ -546,8 +556,7 @@ public class CompilationEngine {
 
         assert jackTokenizer.symbol() == ')';
         jackTokenizer.retreat();
-//        printWriter.println("</expressionList>");
-        return argumentCount;
+        return expressionCount;
     }
 
     /**

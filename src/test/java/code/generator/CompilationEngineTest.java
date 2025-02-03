@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import static code.generator.SymbolKind.ARG;
 import static code.generator.SymbolKind.FIELD;
@@ -16,6 +18,9 @@ import static code.generator.SymbolTableLevel.KLASS;
 import static code.generator.SymbolTableLevel.SUBROUTINE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Nand2tetris tool JackCompiler.sh was used to generate vm code in test code.
+ */
 class CompilationEngineTest {
     @Nested
     class SymbolTable {
@@ -138,12 +143,12 @@ class CompilationEngineTest {
         public void var() {
             // given
             String jackCode = """
-                class Main {
-                    function void more() {
-                        var boolean b;
+                    class Main {
+                        function void more() {
+                            var boolean b;
+                        }
                     }
-                }
-                """;
+                    """;
             CompilationEngine compilationEngine = new CompilationEngine(new ByteArrayInputStream(jackCode.getBytes(UTF_8)), new ByteArrayOutputStream());
             code.generator.SymbolTable subroutineSymbolTable = compilationEngine.getSymbolTable(SUBROUTINE);
 
@@ -157,6 +162,65 @@ class CompilationEngineTest {
                     () -> Assertions.assertEquals("boolean", subroutineSymbolTable.typeOf("b")),
                     () -> Assertions.assertEquals(0, subroutineSymbolTable.indexOf("b"))
             );
+        }
+    }
+
+    private static String getCompileOutput(String jackCode) {
+        InputStream inputStream = new ByteArrayInputStream(jackCode.getBytes(UTF_8));
+        OutputStream outputStream = new ByteArrayOutputStream();
+        CompilationEngine compilationEngine = new CompilationEngine(inputStream, outputStream);
+        compilationEngine.compileClass();
+        return outputStream.toString();
+    }
+
+    @Nested
+    class ReturnVoid {
+        @Test
+        public void method() {
+            // given
+            String jackCode = """
+                    class Bat {
+                       method void setDirection() {
+                           return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function Bat.setDirection 0
+                    push argument 0
+                    pop pointer 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void function() {
+            // given
+            String jackCode = """
+                    class Main {
+                       function void main() {
+                          return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function Main.main 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
         }
     }
 }
