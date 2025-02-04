@@ -873,4 +873,147 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class JackObject {
+        @Test
+        public void constructorNoField() {
+            // given
+            String jackCode = """
+                    class Point {
+                        constructor Point new(int x) {
+                            do Output.printInt(x);
+                            return this;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Point.new 0
+                    push constant 0
+                    call Memory.alloc 1
+                    pop pointer 0
+                    push argument 0
+                    call Output.printInt 1
+                    pop temp 0
+                    push pointer 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void constructor() {
+            // given
+            String jackCode = """
+                    class Point {
+                        field int x, y;
+                        static int pointCount;
+                    
+                        constructor Point new(int ax, int ay) {
+                            let x = ax;
+                            let y = ay;
+                            let pointCount = pointCount + 1;
+                            return this;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Point.new 0
+                    push constant 2
+                    call Memory.alloc 1
+                    pop pointer 0
+                    push argument 0
+                    pop this 0
+                    push argument 1
+                    pop this 1
+                    push static 0
+                    push constant 1
+                    add
+                    pop static 0
+                    push pointer 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void returnConstructedObject() {
+            // given
+            String jackCode = """
+                    class Fraction {
+                       field int numerator, denominator;
+                    
+                       constructor Fraction new(int x, int y) {
+                          let numerator = x;
+                          let denominator = y;
+                          return this;
+                       }
+                    
+                       method Fraction plus(Fraction other) {
+                          return Fraction.new(100, 200);
+                       }
+                    }
+                    """;
+            String expected = """
+                    function Fraction.new 0
+                    push constant 2
+                    call Memory.alloc 1
+                    pop pointer 0
+                    push argument 0
+                    pop this 0
+                    push argument 1
+                    pop this 1
+                    push pointer 0
+                    return
+                    function Fraction.plus 0
+                    push argument 0
+                    pop pointer 0
+                    push constant 100
+                    push constant 200
+                    call Fraction.new 2
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void returnStaticObject() {
+            // given
+            String jackCode = """
+                    class PongGame {
+                        static PongGame instance;
+                    
+                        function PongGame getInstance() {
+                            return instance;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function PongGame.getInstance 0
+                    push static 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }

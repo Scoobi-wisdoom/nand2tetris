@@ -12,7 +12,9 @@ import static code.generator.MemorySegment.ARGUMENT;
 import static code.generator.MemorySegment.CONSTANT;
 import static code.generator.MemorySegment.POINTER;
 import static code.generator.MemorySegment.TEMP;
+import static code.generator.SubroutineType.METHOD;
 import static code.generator.SymbolKind.ARG;
+import static code.generator.SymbolKind.FIELD;
 import static code.generator.SymbolKind.NONE;
 import static code.generator.SymbolKind.VAR;
 import static code.generator.SymbolTableLevel.KLASS;
@@ -25,7 +27,7 @@ public class CompilationEngine {
     private final SymbolTable subroutineSymbolTable;
     private String currentKlassName = "";
     private String currentFunctionName = "";
-    private boolean isMethod = false;
+    private SubroutineType declaredSubroutineType;
 
     public CompilationEngine(InputStream inputStream, OutputStream outputStream) {
         this.jackTokenizer = new JackTokenizer(inputStream);
@@ -112,11 +114,9 @@ public class CompilationEngine {
                 jackTokenizer.keyword() == Keyword.FUNCTION;
 
         subroutineSymbolTable.reset();
-        if (jackTokenizer.keyword() == Keyword.METHOD) {
+        declaredSubroutineType = SubroutineType.from(jackTokenizer.keyword());
+        if (declaredSubroutineType == METHOD) {
             subroutineSymbolTable.define("this", currentKlassName, ARG);
-            isMethod = true;
-        } else {
-            isMethod = false;
         }
 
         jackTokenizer.advance();
@@ -173,9 +173,16 @@ public class CompilationEngine {
                 compileVarDec();
             } else {
                 vmWriter.writeFunction(currentKlassName + "." + currentFunctionName, subroutineSymbolTable.varCount(VAR));
-                if (isMethod) {
-                    vmWriter.writePush(ARGUMENT, subroutineSymbolTable.indexOf("this"));
-                    vmWriter.writePop(POINTER, 0);
+                switch (declaredSubroutineType) {
+                    case METHOD:
+                        vmWriter.writePush(ARGUMENT, subroutineSymbolTable.indexOf("this"));
+                        vmWriter.writePop(POINTER, 0);
+                        break;
+                    case CONSTRUCTOR:
+                        vmWriter.writePush(CONSTANT, klassSymbolTable.varCount(FIELD));
+                        vmWriter.writeCall("Memory.alloc", 1);
+                        vmWriter.writePop(POINTER, 0);
+                        break;
                 }
                 compileStatements();
                 jackTokenizer.advance();
