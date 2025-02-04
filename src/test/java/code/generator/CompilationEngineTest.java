@@ -1016,4 +1016,161 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class OsArray {
+        @Test
+        public void initialize() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function void main() {
+                           var Array a;
+                           let a = Array.new(10);
+                           return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.main 1
+                    push constant 10
+                    call Array.new 1
+                    pop local 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void assign() {
+            // given
+            String jackCode = """
+                    class Main {
+                        static Array a;
+                        function void main() {
+                           let a[2] = 222;
+                           return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.main 0
+                    push constant 2
+                    push static 0
+                    add
+                    push constant 222
+                    pop temp 0
+                    pop pointer 1
+                    push temp 0
+                    pop that 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void returnArray() {
+            // given
+            String jackCode = """
+                    class Output {
+                        static Array charMaps;
+                    
+                        function Array getMap(char c) {
+                            return charMaps[c];
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Output.getMap 0
+                    push argument 0
+                    push static 0
+                    add
+                    pop pointer 1
+                    push that 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void complex() {
+            // given
+            String jackCode = """
+                    class Array {
+                        static Array a, b;
+                    
+                        function void complex(int i, int j) {
+                           let a[b[i] + a[j + b[a[3]]]] = b[b[j] + 2];
+                           return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Array.complex 0
+                    push argument 0
+                    push static 1
+                    add
+                    pop pointer 1
+                    push that 0
+                    push argument 1
+                    push constant 3
+                    push static 0
+                    add
+                    pop pointer 1
+                    push that 0
+                    push static 1
+                    add
+                    pop pointer 1
+                    push that 0
+                    add
+                    push static 0
+                    add
+                    pop pointer 1
+                    push that 0
+                    add
+                    push static 0
+                    add
+                    push argument 1
+                    push static 1
+                    add
+                    pop pointer 1
+                    push that 0
+                    push constant 2
+                    add
+                    push static 1
+                    add
+                    pop pointer 1
+                    push that 0
+                    pop temp 0
+                    pop pointer 1
+                    push temp 0
+                    pop that 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }

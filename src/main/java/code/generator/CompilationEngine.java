@@ -7,11 +7,13 @@ import syntax.analyzer.TokenType;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static code.generator.ArithmeticCommand.ADD;
 import static code.generator.ArithmeticCommand.NOT;
 import static code.generator.MemorySegment.ARGUMENT;
 import static code.generator.MemorySegment.CONSTANT;
 import static code.generator.MemorySegment.POINTER;
 import static code.generator.MemorySegment.TEMP;
+import static code.generator.MemorySegment.THAT;
 import static code.generator.SubroutineType.METHOD;
 import static code.generator.SymbolKind.ARG;
 import static code.generator.SymbolKind.FIELD;
@@ -25,6 +27,7 @@ public class CompilationEngine {
     private String currentKlassName = "";
     private String currentFunctionName = "";
     private SubroutineType declaredSubroutineType;
+    private boolean isAssigneeArray = false;
 
     public CompilationEngine(InputStream inputStream, OutputStream outputStream) {
         this.jackTokenizer = new JackTokenizer(inputStream);
@@ -260,16 +263,23 @@ public class CompilationEngine {
         assert jackTokenizer.keyword() == Keyword.LET;
         jackTokenizer.advance();
 
-        int assigneeIndex = symbolTablePair.getIndex(jackTokenizer.identifier());
-        MemorySegment assigneeMemorySegment = symbolTablePair.getMemorySegment(jackTokenizer.identifier());
+        String assignee = jackTokenizer.identifier();
 
         jackTokenizer.advance();
         if (jackTokenizer.tokenType() == TokenType.SYMBOL && jackTokenizer.symbol() == '[') {
+            isAssigneeArray = true;
             jackTokenizer.advance();
             compileExpression();
             jackTokenizer.advance();
             assert jackTokenizer.symbol() == ']';
+            vmWriter.writePush(
+                    symbolTablePair.getMemorySegment(assignee),
+                    symbolTablePair.getIndex(assignee)
+            );
+            vmWriter.writeArithmetic(ADD);
             jackTokenizer.advance();
+        } else {
+            isAssigneeArray = false;
         }
 
         assert jackTokenizer.symbol() == '=';
@@ -278,7 +288,17 @@ public class CompilationEngine {
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == ';';
 
-        vmWriter.writePop(assigneeMemorySegment, assigneeIndex);
+        if (isAssigneeArray) {
+            vmWriter.writePop(TEMP, 0);
+            vmWriter.writePop(POINTER, 1);
+            vmWriter.writePush(TEMP, 0);
+            vmWriter.writePop(THAT, 0);
+        } else {
+            vmWriter.writePop(
+                    symbolTablePair.getMemorySegment(assignee),
+                    symbolTablePair.getIndex(assignee)
+            );
+        }
     }
 
 
@@ -483,12 +503,17 @@ public class CompilationEngine {
                 if (jackTokenizer.tokenType() == TokenType.SYMBOL) {
                     switch (jackTokenizer.symbol()) {
                         case '[':
-//                            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                             jackTokenizer.advance();
                             compileExpression();
                             jackTokenizer.advance();
                             assert jackTokenizer.symbol() == ']';
-//                            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                            vmWriter.writePush(
+                                    symbolTablePair.getMemorySegment(identifier),
+                                    symbolTablePair.getIndex(identifier)
+                            );
+                            vmWriter.writeArithmetic(ADD);
+                            vmWriter.writePop(POINTER, 1);
+                            vmWriter.writePush(THAT, 0);
                             break;
                         case '.':
                             jackTokenizer.retreat();
@@ -496,9 +521,10 @@ public class CompilationEngine {
                             jackTokenizer.retreat();
                             break;
                         default:
-                            int index = symbolTablePair.getIndex(identifier);
-                            MemorySegment memorySegment = symbolTablePair.getMemorySegment(identifier);
-                            vmWriter.writePush(memorySegment, index);
+                            vmWriter.writePush(
+                                    symbolTablePair.getMemorySegment(identifier),
+                                    symbolTablePair.getIndex(identifier)
+                            );
                             jackTokenizer.retreat();
                             break;
                     }
