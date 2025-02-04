@@ -11,6 +11,7 @@ import static code.generator.ArithmeticCommand.NOT;
 import static code.generator.MemorySegment.ARGUMENT;
 import static code.generator.MemorySegment.CONSTANT;
 import static code.generator.MemorySegment.POINTER;
+import static code.generator.MemorySegment.TEMP;
 import static code.generator.SymbolKind.ARG;
 import static code.generator.SymbolKind.NONE;
 import static code.generator.SymbolKind.VAR;
@@ -355,9 +356,15 @@ public class CompilationEngine {
     }
 
     private void compileDo() {
-//        printWriter.println("<doStatement>");
         assert jackTokenizer.keyword() == Keyword.DO;
-//        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+        jackTokenizer.advance();
+        compileCall();
+        vmWriter.writePop(TEMP, 0);
+        assert jackTokenizer.symbol() == ';';
+    }
+
+    private void compileCall() {
+        StringBuilder calleeName = new StringBuilder(jackTokenizer.identifier());
         whileLoop:
         while (jackTokenizer.hasMoreTokens()) {
             jackTokenizer.advance();
@@ -366,26 +373,37 @@ public class CompilationEngine {
                     case '(':
                         break whileLoop;
                     case '.':
-//                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                        calleeName.append(jackTokenizer.symbol());
                         break;
                     default:
                         throw new RuntimeException("Unexpected symbol: " + jackTokenizer.symbol());
                 }
             } else {
-//                printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
+                calleeName.append(jackTokenizer.identifier());
             }
         }
         assert jackTokenizer.symbol() == '(';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
         jackTokenizer.advance();
-        compileExpressionList();
+        int expressionCount = compileExpressionList();
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == ')';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
         jackTokenizer.advance();
-        assert jackTokenizer.symbol() == ';';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-//        printWriter.println("</doStatement>");
+
+        int dotIndex = calleeName.indexOf(".");
+        if (dotIndex == -1) {
+            vmWriter.writeCall(currentKlassName + "." + calleeName, expressionCount + 1);
+        } else {
+            String receiver = calleeName.substring(0, dotIndex);
+            if (subroutineSymbolTable.kindOf(receiver) != NONE) {
+                vmWriter.writePush(getMemorySegmentFromSymbolTables(receiver), getIndexFromSymbolTables(receiver));
+                vmWriter.writeCall(
+                        subroutineSymbolTable.typeOf(receiver) + calleeName.substring(dotIndex),
+                        expressionCount + 1
+                );
+            } else {
+                vmWriter.writeCall(calleeName.toString(), expressionCount);
+            }
+        }
     }
 
     private void compileReturn() {
@@ -454,11 +472,8 @@ public class CompilationEngine {
     private void compileTerm() {
         switch (jackTokenizer.tokenType()) {
             case IDENTIFIER:
-                int index = getIndexFromSymbolTables(jackTokenizer.identifier());
-                MemorySegment memorySegment = getMemorySegmentFromSymbolTables(jackTokenizer.identifier());
-                vmWriter.writePush(memorySegment, index);
+                String identifier = jackTokenizer.identifier();
                 jackTokenizer.advance();
-
                 if (jackTokenizer.tokenType() == TokenType.SYMBOL) {
                     switch (jackTokenizer.symbol()) {
                         case '[':
@@ -470,19 +485,14 @@ public class CompilationEngine {
 //                            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                             break;
                         case '.':
-//                            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-                            jackTokenizer.advance();
-//                            printWriter.println("<identifier> " + jackTokenizer.identifier() + " </identifier>");
-                            jackTokenizer.advance();
-                            assert jackTokenizer.symbol() == '(';
-//                            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-                            jackTokenizer.advance();
-                            compileExpressionList();
-                            jackTokenizer.advance();
-                            assert jackTokenizer.symbol() == ')';
-//                            printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                            jackTokenizer.retreat();
+                            compileCall();
+                            jackTokenizer.retreat();
                             break;
                         default:
+                            int index = getIndexFromSymbolTables(identifier);
+                            MemorySegment memorySegment = getMemorySegmentFromSymbolTables(identifier);
+                            vmWriter.writePush(memorySegment, index);
                             jackTokenizer.retreat();
                             break;
                     }

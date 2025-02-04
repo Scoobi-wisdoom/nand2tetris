@@ -697,4 +697,180 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class Call {
+        @Test
+        public void OsApi() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function void main() {
+                            do Output.printString();
+                            return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.main 0
+                    call Output.printString 0
+                    pop temp 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void function() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function void main() {
+                            do Main.checkRange(3, 4);
+                            return;
+                        }
+                    
+                        function void checkRange(int a, int a_len) {
+                            return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.main 0
+                    push constant 3
+                    push constant 4
+                    call Main.checkRange 2
+                    pop temp 0
+                    push constant 0
+                    return
+                    function Main.checkRange 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void method() {
+            // given
+            String jackCode = """
+                    class Square {
+                       method void erase() {
+                          return;
+                       }
+                    
+                       method void eraseSecond() {
+                          do erase();
+                          return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function Square.erase 0
+                    push argument 0
+                    pop pointer 0
+                    push constant 0
+                    return
+                    function Square.eraseSecond 0
+                    push argument 0
+                    pop pointer 0
+                    call Square.erase 1
+                    pop temp 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void methodAsArgument() {
+            // given
+            String jackCode = """
+                    class Square {
+                       method int getData() { return 3; }
+                    
+                       method void print() {
+                          var List current;
+                          let current = this;
+                          do Output.printInt(current.getData());
+                          return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function Square.getData 0
+                    push argument 0
+                    pop pointer 0
+                    push constant 3
+                    return
+                    function Square.print 1
+                    push argument 0
+                    pop pointer 0
+                    push pointer 0
+                    pop local 0
+                    push local 0
+                    call List.getData 1
+                    call Output.printInt 1
+                    pop temp 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void functionAsArgument() {
+            // given
+            String jackCode = """
+                    class Square {
+                       function int getData() { return 3; }
+                    
+                       method void print() {
+                          do Output.printInt(Square.getData());
+                          return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function Square.getData 0
+                    push constant 3
+                    return
+                    function Square.print 0
+                    push argument 0
+                    pop pointer 0
+                    call Square.getData 0
+                    call Output.printInt 1
+                    pop temp 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }
