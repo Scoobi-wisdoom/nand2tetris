@@ -17,14 +17,11 @@ import static code.generator.SymbolKind.ARG;
 import static code.generator.SymbolKind.FIELD;
 import static code.generator.SymbolKind.NONE;
 import static code.generator.SymbolKind.VAR;
-import static code.generator.SymbolTableLevel.KLASS;
-import static code.generator.SymbolTableLevel.SUBROUTINE;
 
 public class CompilationEngine {
     private final JackTokenizer jackTokenizer;
     private final VMWriter vmWriter;
-    private final SymbolTable klassSymbolTable;
-    private final SymbolTable subroutineSymbolTable;
+    private final SymbolTablePair symbolTablePair;
     private String currentKlassName = "";
     private String currentFunctionName = "";
     private SubroutineType declaredSubroutineType;
@@ -32,8 +29,7 @@ public class CompilationEngine {
     public CompilationEngine(InputStream inputStream, OutputStream outputStream) {
         this.jackTokenizer = new JackTokenizer(inputStream);
         this.vmWriter = new VMWriter(outputStream);
-        this.klassSymbolTable = new SymbolTable(KLASS);
-        this.subroutineSymbolTable = new SymbolTable(SUBROUTINE);
+        this.symbolTablePair = new SymbolTablePair();
         jackTokenizer.advance();
     }
 
@@ -95,7 +91,7 @@ public class CompilationEngine {
         whileLoop:
         while (jackTokenizer.hasMoreTokens()) {
             jackTokenizer.advance();
-            klassSymbolTable.define(jackTokenizer.identifier(), symbolType, symbolKind);
+            symbolTablePair.getKlassSymbolTable().define(jackTokenizer.identifier(), symbolType, symbolKind);
             jackTokenizer.advance();
             switch (jackTokenizer.symbol()) {
                 case ',':
@@ -113,10 +109,10 @@ public class CompilationEngine {
                 jackTokenizer.keyword() == Keyword.METHOD ||
                 jackTokenizer.keyword() == Keyword.FUNCTION;
 
-        subroutineSymbolTable.reset();
+        symbolTablePair.getSubroutineSymbolTable().reset();
         declaredSubroutineType = SubroutineType.from(jackTokenizer.keyword());
         if (declaredSubroutineType == METHOD) {
-            subroutineSymbolTable.define("this", currentKlassName, ARG);
+            symbolTablePair.getSubroutineSymbolTable().define("this", currentKlassName, ARG);
         }
 
         jackTokenizer.advance();
@@ -156,7 +152,7 @@ public class CompilationEngine {
                     throw new RuntimeException("ParameterList types should not be " + jackTokenizer.tokenType());
             };
             jackTokenizer.advance();
-            subroutineSymbolTable.define(jackTokenizer.identifier(), symbolType, ARG);
+            symbolTablePair.getSubroutineSymbolTable().define(jackTokenizer.identifier(), symbolType, ARG);
             jackTokenizer.advance();
             if (jackTokenizer.symbol() == ',') {
                 jackTokenizer.advance();
@@ -172,14 +168,14 @@ public class CompilationEngine {
             if (jackTokenizer.tokenType() == TokenType.KEYWORD && jackTokenizer.keyword() == Keyword.VAR) {
                 compileVarDec();
             } else {
-                vmWriter.writeFunction(currentKlassName + "." + currentFunctionName, subroutineSymbolTable.varCount(VAR));
+                vmWriter.writeFunction(currentKlassName + "." + currentFunctionName, symbolTablePair.getSubroutineSymbolTable().varCount(VAR));
                 switch (declaredSubroutineType) {
                     case METHOD:
-                        vmWriter.writePush(ARGUMENT, subroutineSymbolTable.indexOf("this"));
+                        vmWriter.writePush(ARGUMENT, symbolTablePair.getSubroutineSymbolTable().indexOf("this"));
                         vmWriter.writePop(POINTER, 0);
                         break;
                     case CONSTRUCTOR:
-                        vmWriter.writePush(CONSTANT, klassSymbolTable.varCount(FIELD));
+                        vmWriter.writePush(CONSTANT, symbolTablePair.getKlassSymbolTable().varCount(FIELD));
                         vmWriter.writeCall("Memory.alloc", 1);
                         vmWriter.writePop(POINTER, 0);
                         break;
@@ -208,7 +204,7 @@ public class CompilationEngine {
         whileLoop:
         while (jackTokenizer.hasMoreTokens()) {
             jackTokenizer.advance();
-            subroutineSymbolTable.define(jackTokenizer.identifier(), symbolType, VAR);
+            symbolTablePair.getSubroutineSymbolTable().define(jackTokenizer.identifier(), symbolType, VAR);
             jackTokenizer.advance();
             switch (jackTokenizer.symbol()) {
                 case ',':
@@ -264,8 +260,8 @@ public class CompilationEngine {
         assert jackTokenizer.keyword() == Keyword.LET;
         jackTokenizer.advance();
 
-        int assigneeIndex = getIndexFromSymbolTables(jackTokenizer.identifier());
-        MemorySegment assigneeMemorySegment = getMemorySegmentFromSymbolTables(jackTokenizer.identifier());
+        int assigneeIndex = symbolTablePair.getIndex(jackTokenizer.identifier());
+        MemorySegment assigneeMemorySegment = symbolTablePair.getMemorySegment(jackTokenizer.identifier());
 
         jackTokenizer.advance();
         if (jackTokenizer.tokenType() == TokenType.SYMBOL && jackTokenizer.symbol() == '[') {
@@ -401,10 +397,13 @@ public class CompilationEngine {
             vmWriter.writeCall(currentKlassName + "." + calleeName, expressionCount + 1);
         } else {
             String receiver = calleeName.substring(0, dotIndex);
-            if (subroutineSymbolTable.kindOf(receiver) != NONE) {
-                vmWriter.writePush(getMemorySegmentFromSymbolTables(receiver), getIndexFromSymbolTables(receiver));
+            if (symbolTablePair.getSubroutineSymbolTable().kindOf(receiver) != NONE) {
+                vmWriter.writePush(
+                        symbolTablePair.getMemorySegment(receiver),
+                        symbolTablePair.getIndex(receiver)
+                );
                 vmWriter.writeCall(
-                        subroutineSymbolTable.typeOf(receiver) + calleeName.substring(dotIndex),
+                        symbolTablePair.getSubroutineSymbolTable().typeOf(receiver) + calleeName.substring(dotIndex),
                         expressionCount + 1
                 );
             } else {
@@ -497,8 +496,8 @@ public class CompilationEngine {
                             jackTokenizer.retreat();
                             break;
                         default:
-                            int index = getIndexFromSymbolTables(identifier);
-                            MemorySegment memorySegment = getMemorySegmentFromSymbolTables(identifier);
+                            int index = symbolTablePair.getIndex(identifier);
+                            MemorySegment memorySegment = symbolTablePair.getMemorySegment(identifier);
                             vmWriter.writePush(memorySegment, index);
                             jackTokenizer.retreat();
                             break;
@@ -561,28 +560,6 @@ public class CompilationEngine {
 //        printWriter.println("</term>");
     }
 
-    private MemorySegment getMemorySegmentFromSymbolTables(String name) {
-        MemorySegment memorySegment;
-        if (klassSymbolTable.kindOf(name) == NONE) {
-            memorySegment = subroutineSymbolTable.kindOf(name).getMemorySegment();
-        } else {
-            assert klassSymbolTable.kindOf(name) != NONE;
-            memorySegment = klassSymbolTable.kindOf(name).getMemorySegment();
-        }
-        return memorySegment;
-    }
-
-    private int getIndexFromSymbolTables(String name) {
-        int index;
-        if (klassSymbolTable.kindOf(name) == NONE) {
-            index = subroutineSymbolTable.indexOf(name);
-        } else {
-            assert klassSymbolTable.kindOf(name) != NONE;
-            index = klassSymbolTable.indexOf(name);
-        }
-        return index;
-    }
-
     /**
      * Implemented to return int value according to the textbook's requirements even though it is never used.
      */
@@ -621,9 +598,9 @@ public class CompilationEngine {
     SymbolTable getSymbolTable(SymbolTableLevel level) {
         return switch (level) {
             case KLASS:
-                yield klassSymbolTable;
+                yield symbolTablePair.getKlassSymbolTable();
             case SUBROUTINE:
-                yield subroutineSymbolTable;
+                yield symbolTablePair.getSubroutineSymbolTable();
         };
     }
 }
