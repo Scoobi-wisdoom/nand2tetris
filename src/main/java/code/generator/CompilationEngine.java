@@ -18,7 +18,6 @@ import static code.generator.MemorySegment.THAT;
 import static code.generator.SubroutineType.METHOD;
 import static code.generator.SymbolKind.ARG;
 import static code.generator.SymbolKind.FIELD;
-import static code.generator.SymbolKind.NONE;
 import static code.generator.SymbolKind.VAR;
 
 public class CompilationEngine {
@@ -309,9 +308,10 @@ public class CompilationEngine {
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == ')';
 
-        vmWriter.writeIf("IF_TRUE" + labelIfCount);
-        vmWriter.writeGoTo("IF_FALSE" + labelIfCount);
-        vmWriter.writeLabel("IF_TRUE" + labelIfCount);
+        long currentIfCount = labelIfCount++;
+        vmWriter.writeIf("IF_TRUE" + currentIfCount);
+        vmWriter.writeGoTo("IF_FALSE" + currentIfCount);
+        vmWriter.writeLabel("IF_TRUE" + currentIfCount);
 
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == '{';
@@ -324,8 +324,8 @@ public class CompilationEngine {
         if (jackTokenizer.hasMoreTokens()) {
             jackTokenizer.advance();
             if (jackTokenizer.tokenType() == TokenType.KEYWORD && jackTokenizer.keyword() == Keyword.ELSE) {
-                vmWriter.writeGoTo("IF_END" + labelIfCount);
-                vmWriter.writeLabel("IF_FALSE" + labelIfCount);
+                vmWriter.writeGoTo("IF_END" + currentIfCount);
+                vmWriter.writeLabel("IF_FALSE" + currentIfCount);
 
                 jackTokenizer.advance();
                 assert jackTokenizer.symbol() == '{';
@@ -334,14 +334,12 @@ public class CompilationEngine {
                 jackTokenizer.advance();
                 assert jackTokenizer.symbol() == '}';
 
-                vmWriter.writeLabel("IF_END" + labelIfCount);
+                vmWriter.writeLabel("IF_END" + currentIfCount);
             } else {
-                vmWriter.writeLabel("IF_FALSE" + labelIfCount);
+                vmWriter.writeLabel("IF_FALSE" + currentIfCount);
                 jackTokenizer.retreat();
             }
         }
-
-        labelIfCount++;
     }
 
     /**
@@ -350,7 +348,8 @@ public class CompilationEngine {
     private void compileWhile() {
         assert jackTokenizer.keyword() == Keyword.WHILE;
 
-        vmWriter.writeLabel("WHILE_EXP" + labelWhileCount);
+        long currentWhileCount = labelWhileCount++;
+        vmWriter.writeLabel("WHILE_EXP" + currentWhileCount);
 
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == '(';
@@ -361,7 +360,7 @@ public class CompilationEngine {
         jackTokenizer.advance();
 
         vmWriter.writeArithmetic(NOT);
-        vmWriter.writeIf("END_WHILE" + labelWhileCount);
+        vmWriter.writeIf("END_WHILE" + currentWhileCount);
 
         assert jackTokenizer.symbol() == '{';
         jackTokenizer.advance();
@@ -369,10 +368,8 @@ public class CompilationEngine {
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == '}';
 
-        vmWriter.writeGoTo("WHILE_EXP" + labelWhileCount);
-        vmWriter.writeLabel("END_WHILE" + labelWhileCount);
-
-        labelWhileCount++;
+        vmWriter.writeGoTo("WHILE_EXP" + currentWhileCount);
+        vmWriter.writeLabel("END_WHILE" + currentWhileCount);
     }
 
     private void compileDo() {

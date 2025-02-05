@@ -1342,9 +1342,49 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
 
+        @Test
+        public void ifNested() {
+            // given
+            String jackCode = """
+                    class Main {
+                         static boolean a;
+                         static boolean b;
+                    
+                         function void convert() {
+                              if (a) {
+                                if (b) {
+                                }
+                             }
+                             return;
+                         }
+                    }
+                    """;
+            String expected = """
+                    function Main.convert 0
+                    push static 0
+                    if-goto IF_TRUE0
+                    goto IF_FALSE0
+                    label IF_TRUE0
+                    push static 1
+                    if-goto IF_TRUE1
+                    goto IF_FALSE1
+                    label IF_TRUE1
+                    label IF_FALSE1
+                    label IF_FALSE0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
 
         @Test
-        public void whileCondition() {
+        public void whileSingle() {
             // given
             String jackCode = """
                     class SquareGame {
@@ -1364,6 +1404,50 @@ class CompilationEngineTest {
                     eq
                     not
                     if-goto END_WHILE0
+                    goto WHILE_EXP0
+                    label END_WHILE0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void whileNested() {
+            // given
+            String jackCode = """
+                    class SquareGame {
+                       static boolean exit;
+                       static char key;
+                    
+                       function void run() {
+                          while (exit) {
+                               while (key = 0) {
+                               }
+                          }
+                          return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function SquareGame.run 0
+                    label WHILE_EXP0
+                    push static 0
+                    not
+                    if-goto END_WHILE0
+                    label WHILE_EXP1
+                    push static 1
+                    push constant 0
+                    eq
+                    not
+                    if-goto END_WHILE1
+                    goto WHILE_EXP1
+                    label END_WHILE1
                     goto WHILE_EXP0
                     label END_WHILE0
                     push constant 0
