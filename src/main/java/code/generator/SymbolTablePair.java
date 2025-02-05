@@ -42,4 +42,20 @@ public class SymbolTablePair {
         }
         return index;
     }
+
+    public String getType(String name) {
+        String type;
+        if (klassSymbolTable.kindOf(name) == NONE) {
+            type = subroutineSymbolTable.typeOf(name);
+        } else {
+            assert klassSymbolTable.kindOf(name) != NONE;
+            type = klassSymbolTable.typeOf(name);
+        }
+        return type;
+    }
+
+    public boolean contains(String name) {
+        return klassSymbolTable.kindOf(name) != NONE ||
+                subroutineSymbolTable.kindOf(name) != NONE;
+    }
 }

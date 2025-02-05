@@ -414,13 +414,13 @@ public class CompilationEngine {
             vmWriter.writeCall(currentKlassName + "." + calleeName, expressionCount + 1);
         } else {
             String receiver = calleeName.substring(0, dotIndex);
-            if (symbolTablePair.getSubroutineSymbolTable().kindOf(receiver) != NONE) {
+            if (symbolTablePair.contains(receiver)) {
                 vmWriter.writePush(
                         symbolTablePair.getMemorySegment(receiver),
                         symbolTablePair.getIndex(receiver)
                 );
                 vmWriter.writeCall(
-                        symbolTablePair.getSubroutineSymbolTable().typeOf(receiver) + calleeName.substring(dotIndex),
+                        symbolTablePair.getType(receiver) + calleeName.substring(dotIndex),
                         expressionCount + 1
                 );
             } else {

@@ -868,6 +868,37 @@ class CompilationEngineTest {
         }
 
         @Test
+        public void methodOfObject() {
+            // given
+            String jackCode = """
+                    class SquareGame {
+                       field Square square;
+                    
+                       method void dispose() {
+                          do square.dispose();
+                          return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function SquareGame.dispose 0
+                    push argument 0
+                    pop pointer 0
+                    push this 0
+                    call Square.dispose 1
+                    pop temp 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
         public void methodAsArgument() {
             // given
             String jackCode = """
