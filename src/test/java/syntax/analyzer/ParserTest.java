@@ -113,6 +113,25 @@ class ParserTest {
     }
 
     @Test
+    public void removeAsteriskNoComment() {
+        String actual = Parser.removeComments(new ByteArrayInputStream("""
+                /**
+                 *
+                 */
+                class Main
+                """
+                .getBytes(UTF_8)));
+        String expected = """
+                
+                
+                
+                class Main
+                """;
+        Assertions.assertEquals(expected, actual);
+    }
+
+
+    @Test
     public void removeSlashComments() {
         String commentInAboveActual = Parser.removeComments(new ByteArrayInputStream("""
                 // waits for the key to be released

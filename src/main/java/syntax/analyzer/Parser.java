@@ -89,7 +89,11 @@ public class Parser {
                         }
                     }
                 } else {
-                    lineWithoutComment = line;
+                    if (isInsideAsteriskComment) {
+                        lineWithoutComment = "";
+                    } else {
+                        lineWithoutComment = line;
+                    }
                 }
                 sourceWithoutComment.append(lineWithoutComment).append("\n");
             }
