@@ -584,9 +584,6 @@ public class CompilationEngine {
         }
     }
 
-    /**
-     * Implemented to return int value according to the textbook's requirements even though it is never used.
-     */
     private int compileExpressionList() {
         int expressionCount = 0;
         whileLoop:
@@ -599,6 +596,9 @@ public class CompilationEngine {
                         compileExpression();
                         break;
                     case ',':
+                        if (expressionCount == 0) {
+                            expressionCount++;
+                        }
                         expressionCount++;
                         jackTokenizer.advance();
                         compileExpression();

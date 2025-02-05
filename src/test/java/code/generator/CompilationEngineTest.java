@@ -22,6 +22,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Nand2tetris tool JackCompiler.sh was used to generate vm code in test code.
  */
 class CompilationEngineTest {
+    @Test
+    public void countExpression() {
+
+    }
+
     @Nested
     class SymbolTable {
         @Test
@@ -742,6 +747,42 @@ class CompilationEngineTest {
             String expected = """
                     function Main.main 0
                     call Output.printString 0
+                    pop temp 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void OsApiExpression() {
+            // given
+            String jackCode = """
+                    class Main {
+                       field int x, y;
+                    
+                       method void moveLeft() {
+                          do Screen.some((x + 2) - 3, y);
+                          return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function Main.moveLeft 0
+                    push argument 0
+                    pop pointer 0
+                    push this 0
+                    push constant 2
+                    add
+                    push constant 3
+                    sub
+                    push this 1
+                    call Screen.some 2
                     pop temp 0
                     push constant 0
                     return
