@@ -696,6 +696,34 @@ class CompilationEngineTest {
             // then
             Assertions.assertEquals(expected, actual);
         }
+
+        @Test
+        public void negative() {
+            // given
+            String jackCode = """
+                    class Main {
+                        function void more() {
+                           var int s;
+                           let s = -123;
+                           return;
+                        }
+                    }
+                    """;
+            String expected = """
+                    function Main.more 1
+                    push constant 123
+                    neg
+                    pop local 0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
     }
 
     @Nested

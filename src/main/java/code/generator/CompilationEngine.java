@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import static code.generator.ArithmeticCommand.ADD;
+import static code.generator.ArithmeticCommand.NEG;
 import static code.generator.ArithmeticCommand.NOT;
 import static code.generator.MemorySegment.ARGUMENT;
 import static code.generator.MemorySegment.CONSTANT;
@@ -535,18 +536,20 @@ public class CompilationEngine {
             case SYMBOL:
                 switch (jackTokenizer.symbol()) {
                     case '(':
-//                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                         jackTokenizer.advance();
                         compileExpression();
                         jackTokenizer.advance();
                         assert jackTokenizer.symbol() == ')';
-//                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                         break;
-                    case '-',
-                         '~':
-//                        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+                    case '-':
                         jackTokenizer.advance();
                         compileTerm();
+                        vmWriter.writeArithmetic(NEG);
+                        break;
+                    case '~':
+                        jackTokenizer.advance();
+                        compileTerm();
+                        vmWriter.writeArithmetic(NOT);
                         break;
                     default:
                         throw new RuntimeException("Not an eligible symbol in a term: " + jackTokenizer.symbol());
@@ -583,7 +586,6 @@ public class CompilationEngine {
             default:
                 throw new RuntimeException("Not a term");
         }
-//        printWriter.println("</term>");
     }
 
     /**
