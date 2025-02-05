@@ -28,7 +28,6 @@ public class CompilationEngine {
     private String currentKlassName = "";
     private String currentFunctionName = "";
     private SubroutineType declaredSubroutineType;
-    private boolean isAssigneeArray = false;
 
     public CompilationEngine(InputStream inputStream, OutputStream outputStream) {
         this.jackTokenizer = new JackTokenizer(inputStream);
@@ -267,6 +266,7 @@ public class CompilationEngine {
         String assignee = jackTokenizer.identifier();
 
         jackTokenizer.advance();
+        boolean isAssigneeArray = false;
         if (jackTokenizer.tokenType() == TokenType.SYMBOL && jackTokenizer.symbol() == '[') {
             isAssigneeArray = true;
             jackTokenizer.advance();
@@ -279,8 +279,6 @@ public class CompilationEngine {
             );
             vmWriter.writeArithmetic(ADD);
             jackTokenizer.advance();
-        } else {
-            isAssigneeArray = false;
         }
 
         assert jackTokenizer.symbol() == '=';
