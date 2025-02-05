@@ -28,6 +28,8 @@ public class CompilationEngine {
     private String currentKlassName = "";
     private String currentFunctionName = "";
     private SubroutineType declaredSubroutineType;
+    private long labelIfCount = 0;
+    private long labelWhileCount = 0;
 
     public CompilationEngine(InputStream inputStream, OutputStream outputStream) {
         this.jackTokenizer = new JackTokenizer(inputStream);
@@ -62,11 +64,7 @@ public class CompilationEngine {
                     throw new RuntimeException("compileClass failed with: " + jackTokenizer.keyword());
             }
         }
-
         assert jackTokenizer.symbol() == '}';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
-
-//        printWriter.println("</class>");
 
         vmWriter.close();
     }
@@ -224,7 +222,6 @@ public class CompilationEngine {
      * Called only if the previous token is '{'.
      */
     private void compileStatements() {
-//        printWriter.println("<statements>");
         while (jackTokenizer.hasMoreTokens()) {
             if (jackTokenizer.tokenType() == TokenType.KEYWORD) {
                 switch (jackTokenizer.keyword()) {
@@ -253,7 +250,6 @@ public class CompilationEngine {
         }
         assert jackTokenizer.symbol() == '}';
         jackTokenizer.retreat();
-//        printWriter.println("</statements>");
     }
 
     /**
@@ -305,76 +301,78 @@ public class CompilationEngine {
      * if statement := `if`, `(expression)`, `{statements}`
      */
     private void compileIf() {
-//        printWriter.println("<ifStatement>");
-
         assert jackTokenizer.keyword() == Keyword.IF;
-//        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == '(';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
         jackTokenizer.advance();
         compileExpression();
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == ')';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+
+        vmWriter.writeIf("IF_TRUE" + labelIfCount);
+        vmWriter.writeGoTo("IF_FALSE" + labelIfCount);
+        vmWriter.writeLabel("IF_TRUE" + labelIfCount);
+
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == '{';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
         jackTokenizer.advance();
         compileStatements();
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == '}';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+
 
         if (jackTokenizer.hasMoreTokens()) {
             jackTokenizer.advance();
             if (jackTokenizer.tokenType() == TokenType.KEYWORD && jackTokenizer.keyword() == Keyword.ELSE) {
-//                printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
+                vmWriter.writeGoTo("IF_END" + labelIfCount);
+                vmWriter.writeLabel("IF_FALSE" + labelIfCount);
+
                 jackTokenizer.advance();
                 assert jackTokenizer.symbol() == '{';
-//                printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
                 jackTokenizer.advance();
                 compileStatements();
                 jackTokenizer.advance();
                 assert jackTokenizer.symbol() == '}';
-//                printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
+
+                vmWriter.writeLabel("IF_END" + labelIfCount);
             } else {
+                vmWriter.writeLabel("IF_FALSE" + labelIfCount);
                 jackTokenizer.retreat();
             }
         }
 
-//        printWriter.println("</ifStatement>");
+        labelIfCount++;
     }
 
     /**
      * while statement := `while`, `(expression)`, `{statements}`
      */
     private void compileWhile() {
-//        printWriter.println("<whileStatement>");
-
         assert jackTokenizer.keyword() == Keyword.WHILE;
-//        printWriter.println("<keyword> " + jackTokenizer.keyword() + " </keyword>");
-        jackTokenizer.advance();
 
+        vmWriter.writeLabel("WHILE_EXP" + labelWhileCount);
+
+        jackTokenizer.advance();
         assert jackTokenizer.symbol() == '(';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
         jackTokenizer.advance();
         compileExpression();
         jackTokenizer.advance();
         assert jackTokenizer.symbol() == ')';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
         jackTokenizer.advance();
 
+        vmWriter.writeArithmetic(NOT);
+        vmWriter.writeIf("END_WHILE" + labelWhileCount);
+
         assert jackTokenizer.symbol() == '{';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
         jackTokenizer.advance();
         compileStatements();
         jackTokenizer.advance();
-
         assert jackTokenizer.symbol() == '}';
-//        printWriter.println("<symbol> " + jackTokenizer.symbol() + " </symbol>");
 
-//        printWriter.println("</whileStatement>");
+        vmWriter.writeGoTo("WHILE_EXP" + labelWhileCount);
+        vmWriter.writeLabel("END_WHILE" + labelWhileCount);
+
+        labelWhileCount++;
     }
 
     private void compileDo() {

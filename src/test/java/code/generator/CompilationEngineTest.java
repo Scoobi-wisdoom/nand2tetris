@@ -1201,4 +1201,108 @@ class CompilationEngineTest {
             Assertions.assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    class Condition {
+        @Test
+        public void ifOnly() {
+            // given
+            String jackCode = """
+                    class Main {
+                         static boolean b;
+                         function void more() {
+                             if (b) {
+                             }
+                             return;
+                         }
+                    }
+                    """;
+            String expected = """
+                    function Main.more 0
+                    push static 0
+                    if-goto IF_TRUE0
+                    goto IF_FALSE0
+                    label IF_TRUE0
+                    label IF_FALSE0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        public void ifElse() {
+            // given
+            String jackCode = """
+                    class Main {
+                         static boolean b;
+                         function void more() {
+                             if (b) {
+                             }
+                             else {
+                             }
+                             return;
+                         }
+                    }
+                    """;
+            String expected = """
+                    function Main.more 0
+                    push static 0
+                    if-goto IF_TRUE0
+                    goto IF_FALSE0
+                    label IF_TRUE0
+                    goto IF_END0
+                    label IF_FALSE0
+                    label IF_END0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+
+
+        @Test
+        public void whileCondition() {
+            // given
+            String jackCode = """
+                    class SquareGame {
+                       static char key;
+                       function void run() {
+                          while (key = 0) {
+                          }
+                          return;
+                       }
+                    }
+                    """;
+            String expected = """
+                    function SquareGame.run 0
+                    label WHILE_EXP0
+                    push static 0
+                    push constant 0
+                    eq
+                    not
+                    if-goto END_WHILE0
+                    goto WHILE_EXP0
+                    label END_WHILE0
+                    push constant 0
+                    return
+                    """;
+
+            // when
+            String actual = getCompileOutput(jackCode);
+
+            // then
+            Assertions.assertEquals(expected, actual);
+        }
+    }
 }
