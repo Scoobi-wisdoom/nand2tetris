@@ -18,6 +18,7 @@ import static code.generator.MemorySegment.THAT;
 import static code.generator.SubroutineType.METHOD;
 import static code.generator.SymbolKind.ARG;
 import static code.generator.SymbolKind.FIELD;
+import static code.generator.SymbolKind.NONE;
 import static code.generator.SymbolKind.VAR;
 
 public class CompilationEngine {
@@ -401,23 +402,32 @@ public class CompilationEngine {
         }
         assert jackTokenizer.symbol() == '(';
         jackTokenizer.advance();
-        int expressionCount = compileExpressionList();
-        jackTokenizer.advance();
-        assert jackTokenizer.symbol() == ')';
-        jackTokenizer.advance();
 
-        int dotIndex = calleeName.indexOf(".");
-        if (dotIndex == -1) {
-            vmWriter.writeCall(currentKlassName + "." + calleeName, expressionCount + 1);
+        boolean isSameClassMember = calleeName.indexOf(".") == -1;
+        if (isSameClassMember) {
+            vmWriter.writePush(POINTER, 0);
         } else {
-            String receiver = calleeName.substring(0, dotIndex);
+            String receiver = calleeName.substring(0, calleeName.indexOf("."));
             if (symbolTablePair.contains(receiver)) {
                 vmWriter.writePush(
                         symbolTablePair.getMemorySegment(receiver),
                         symbolTablePair.getIndex(receiver)
                 );
+            }
+        }
+
+        int expressionCount = compileExpressionList();
+        jackTokenizer.advance();
+        assert jackTokenizer.symbol() == ')';
+        jackTokenizer.advance();
+
+        if (isSameClassMember) {
+            vmWriter.writeCall(currentKlassName + "." + calleeName, expressionCount + 1);
+        } else {
+            String receiver = calleeName.substring(0, calleeName.indexOf("."));
+            if (symbolTablePair.contains(receiver)) {
                 vmWriter.writeCall(
-                        symbolTablePair.getType(receiver) + calleeName.substring(dotIndex),
+                        symbolTablePair.getType(receiver) + calleeName.substring(calleeName.indexOf(".")),
                         expressionCount + 1
                 );
             } else {

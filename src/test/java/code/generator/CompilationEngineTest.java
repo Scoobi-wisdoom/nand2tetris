@@ -835,26 +835,29 @@ class CompilationEngineTest {
             // given
             String jackCode = """
                     class Square {
-                       method void erase() {
+                       method void draw(int a, int b) {
                           return;
                        }
-                    
-                       method void eraseSecond() {
-                          do erase();
+                       method void drawSecond() {
+                          var int a, b;
+                          do draw(a, b);
                           return;
                        }
                     }
                     """;
             String expected = """
-                    function Square.erase 0
+                    function Square.draw 0
                     push argument 0
                     pop pointer 0
                     push constant 0
                     return
-                    function Square.eraseSecond 0
+                    function Square.drawSecond 2
                     push argument 0
                     pop pointer 0
-                    call Square.erase 1
+                    push pointer 0
+                    push local 0
+                    push local 1
+                    call Square.draw 3
                     pop temp 0
                     push constant 0
                     return
@@ -875,7 +878,7 @@ class CompilationEngineTest {
                        field Square square;
                     
                        method void dispose() {
-                          do square.dispose();
+                          do square.dispose(400, 0);
                           return;
                        }
                     }
@@ -885,7 +888,9 @@ class CompilationEngineTest {
                     push argument 0
                     pop pointer 0
                     push this 0
-                    call Square.dispose 1
+                    push constant 400
+                    push constant 0
+                    call Square.dispose 3
                     pop temp 0
                     push constant 0
                     return
