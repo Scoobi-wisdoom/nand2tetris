@@ -183,6 +183,22 @@ Compliation consists of two steps of syntax analysis and code generation. Syntax
 
 Unlike a VMTranslator or an assembler, a compiler can be implemented in as high a level language as the source language itself. For example, the Java compiler is written in Java, and Kotlin's compiler is written in Kotlin.
 
+## Week 6
+VM language does not support symbolic variables. Therefore, to transform a Jack variable into VM code, the code generator must determine whether the variable is a field, static, local, or argument, as well as the order in which the variable was declared. These are managed by **symbol tables**. Since it is possible to define a scope inside another scope, symbol tables should be implemented as a linked list where each table represents a different scope and references its parent scope.
+
+VM language operates on a stack-based architecture so it uses *postfix*.
+> Prefix is functional: * a + b c    
+> Infix is human oriented: a * (b + c) -> programming language   
+> Postfix is stack oriented: a b c + * -> target language, vm language   
+
+To covert *infix* programming language into *postfix* a **parse tree** plays a key role. Depth first tree traversal is an algorithm to convert the parse tree into vm code. Project 10's xml file is just an implementation of a parse tree.
+
+On RAM, there are pointers of `SP`, `LCL`, `ARG`, `THIS` and `THAT`. `local` and `argument` variables are stored on stack area while `this` and `that` store base addresses that point to memory in the **heap** to represent **object** and **array**, respectively. During **runtime**, the heap is used to allocate memory dynamically.
+> in fact, arrays are objects, with the difference that the array abstraction allows accessing array elements using an index.
+
+A compiler depends on OS. For example, t must check whether memory allocation is possible based on the system’s constraints.
+> If the host RAM happens to be 32-bit wide, the compiler will map int and long variables on one memory word and on two consecutive memory words, respectively.   
+
 # projects done in different repositories
 - [assembler](https://github.com/Scoobi-wisdoom/assembler)
 - [VMTranslator](https://github.com/Scoobi-wisdoom/VMTranslator)
