@@ -17,10 +17,18 @@
 class Output {
 
     // Character map for displaying characters
-    static Array charMaps; 
+    static Array charMaps, screen;
+    static int cursorCol, cursorRow, maxCursorCol, maxCursorRow;
 
     /** Initializes the screen, and locates the cursor at the screen's top-left. */
     function void init() {
+        do Output.initMap();
+        let cursorCol = 0;
+        let maxCursorCol = 63;
+        let cursorRow = 0;
+        let maxCursorRow = 22;
+        let screen = 16384;
+        return;
     }
 
     // Initializes the character map array
@@ -32,7 +40,7 @@ class Output {
         // Black square, used for displaying non-printable characters.
         do Output.create(0,63,63,63,63,63,63,63,63,63,0,0);
 
-        // Assigns the bitmap for each character in the charachter set.
+        // Assigns the fontBit for each character in the charachter set.
         // The first parameter is the character index, the next 11 numbers
         // are the values of each row in the frame that represents this character.
         do Output.create(32,0,0,0,0,0,0,0,0,0,0,0);          //
@@ -71,7 +79,7 @@ class Output {
         do Output.create(64,30,51,51,59,59,59,27,3,30,0,0);  // @
         do Output.create(63,30,51,51,24,12,12,0,12,12,0,0);  // ?
 
-        do Output.create(65,0,0,0,0,0,0,0,0,0,0,0);          // A ** TO BE FILLED **
+        do Output.create(65,12,30,51,51,63,51,51,51,51,0,0); // A
         do Output.create(66,31,51,51,51,31,51,51,51,31,0,0); // B
         do Output.create(67,28,54,35,3,3,3,35,54,28,0,0);    // C
         do Output.create(68,15,27,51,51,51,51,51,27,15,0,0); // D
@@ -176,28 +184,97 @@ class Output {
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
     function void moveCursor(int i, int j) {
+        let cursorRow = i;
+        let cursorCol = j;
+        return;
     }
 
     /** Displays the given character at the cursor location,
      *  and advances the cursor one column forward. */
     function void printChar(char c) {
+        var int address, i;
+        var int mask, bitmap, fontBit;
+        let address = (32 * cursorRow * 11) + (cursorCol / 2);
+        let bitmap = Output.getMap(c);
+
+        let i = 0;
+        while (i < 11) {
+            let fontBit = bitmap[i];
+            if (cursorCol & 1 = 0) {
+                let screen[address] = screen[address] & -256 | fontBit;
+            } else {
+                let screen[address] = screen[address] & 255 | (fontBit * 256);
+            }
+            let i = i + 1;
+            let address = address + 32;
+        }
+
+        if (cursorCol < maxCursorCol) {
+            do Output.moveCursor(cursorRow, cursorCol + 1);
+        } else {
+            do Output.println();
+        }
+        return;
     }
 
     /** displays the given string starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printString(String s) {
+        var int i;
+        let i = 0;
+        while (i < s.length()) {
+            do Output.printChar(s.charAt(i));
+            let i = i + 1;
+        }
+        return;
     }
 
     /** Displays the given integer starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printInt(int i) {
+        var int abs, j;
+        var boolean negative;
+        var String s;
+        if (i < 0) {
+            let negative = true;
+        } else {
+            let negative = false;
+        }
+        let abs = Math.abs(i);
+        let j = 0;
+        while (~(abs < 10)) {
+            let abs = abs / 10;
+            let j = j + 1;
+        }
+        if (negative) {
+            let s = String.new(j + 2);
+        } else {
+            let s = String.new(j + 1);
+        }
+        do s.setInt(i);
+        do Output.printString(s);
+        return;
     }
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
+        if (cursorRow < maxCursorRow) {
+            do Output.moveCursor(cursorRow + 1, 0);
+        } else {
+            do Output.moveCursor(0, 0);
+        }
+        return;
     }
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+        if (cursorCol = 0) {
+            if (cursorRow > 0) {
+                do Output.moveCursor(cursorRow - 1, maxCursorCol);
+            }
+        } else {
+            do Output.moveCursor(cursorRow, cursorCol - 1);
+        }
+        return;
     }
 }

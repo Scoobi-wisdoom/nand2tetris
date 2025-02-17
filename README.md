@@ -10,6 +10,10 @@ project 4: Fill.asm
 project 5: CPU.hdl   
 project 7: StaticTest.vm   
 project 8: FunctionCalls/StaticsTest FunctionCalls/NestedCall  
+project 10: CompilationEngine   
+project 11: CompilationEngine   
+project 12: Memory.alloc, Screen.drawHorizontalLine,
+
 # Part 1
 ## Week 1
 Computer systems are about abstractions and implementations.
@@ -196,8 +200,93 @@ To covert *infix* programming language into *postfix* a **parse tree** plays a k
 On RAM, there are pointers of `SP`, `LCL`, `ARG`, `THIS` and `THAT`. `local` and `argument` variables are stored on stack area while `this` and `that` store base addresses that point to memory in the **heap** to represent **object** and **array**, respectively. During **runtime**, the heap is used to allocate memory dynamically.
 > in fact, arrays are objects, with the difference that the array abstraction allows accessing array elements using an index.
 
-A compiler depends on OS. For example, t must check whether memory allocation is possible based on the system’s constraints.
+A compiler depends on OS. For example, it must check whether memory allocation is possible based on the system’s constraints.
 > If the host RAM happens to be 32-bit wide, the compiler will map int and long variables on one memory word and on two consecutive memory words, respectively.   
+
+# Week 7
+Heap management should be by using a linked list. The freelist. Before allocating memory searching for free space is required. Two types of search methods are there: best-fit, finding the shortest segment, and first-fit, which find the first long enough segment. Fragmented memory is cleaned up by the process called defragmentation.
+
+Heap management uses a linked list, known as the freelist, to track available memory. Before allocating memory, a search is performed to find free space. There are two common search methods:
+- Best-fit: Finds the smallest available segment that fits the request.
+- First-fit: Finds the first available segment that is large enough.   
+
+To handle fragmented memory, a process called defragmentation reorganizes memory to free up contiguous space.
+
+Implementing an OS requires careful consideration of the following aspects.
+
+## Math
+Since the last bit of a RAM address stands for negative sign, negating 16 bits cause overflow sometimes.   
+To minimize big O, `mulyiplication` uses shit operation and `division` exploits binary search.
+
+## String
+When instantiating `String` it should avoided to create an empty Array which causes memory management issues.
+
+## Memory
+`freeList` is a collection of free memory blocks, and during initialization, the entire heap is one big free block because nothing has been allocated yet. Each free block contains a pointer to the next free block.   
+A free block consists of metadata (size & next block pointer) followed by a sequence of memory words available for allocation. It is worth noting that the block size counts memory words of the size, pointer, and free space. 
+##### A block from the freeList
+```text
++--------------+
+|     size     |
++--------------+
+|   pointer    |
+| to next size |
++--------------+
+|              |
+|  free space  |
+|              |
++--------------+
+```
+On the contrary, a block in use consists of two parts: size and content. 
+##### A block in use
+```text 
++--------------+
+|     size     |
++--------------+
+|              |
+|    content   |
+|              |
++--------------+
+```
+`freeListBlock`'s integer value is the address of `size` whereas `block`'s is the address of `content`.
+
+## Screen
+Since each pixel is represented by a single bit within a 16-bit memory word, the value stored in a memory address must be interpreted bitwise.   
+
+Drawing a vertical line algorithm is different from drawing a horizontal one.
+##### A screen with pixels
+```text
+                 16 * 32 pixels
++------------------------------------------------+
+|                                                |
+|                                                |
+|                                                |
+|                                                |
+|                      ○ ●                       |  16 * 16 pixels
+|                      *                         |
+|                                                |
+|                                                |
+|                                                |
++------------------------------------------------+
+```
+In the figure above, drawing `○` and then `*` - i.e., drawing a vertical line - means accessing 32 memory words apart. On the contrary, drawing `●` after `○` - i.e., drawing a horizontal line - may involve the same memory word with `●`.To modify a bit in a memory word, the entire memory word must be updated. It becomes more efficient to draw a horizontal line than a vertical line by calculating all the memory words that make up a horizontal line.   
+
+Week 7 project (project 12) requires an **integration test on project 11's Pong**. The Screen implementation here fails at the integration test.
+
+## Output
+To display an integer on the screen, it must first be converted into a String, which requires knowing its length.   
+
+To display a String, the screen should be divided into a grid, with the cursor indicating the current position.
+
+## Keyboard
+In Project 12, the down button is expected to have an integer value of 137. However, on a MacBook M2, it registers as 133.   
+
+The keyboard feature reads user input, so it's important to wait for input before processing. Additionally, the length of the input should be determined beforehand.
+
+## Sys
+The Sys initialization performs bootstrapping for the OS. Bootstrapping refers to setting up all necessary components before executing the main application.
+
+In the Nand2Tetris computer architecture, it cannot precisely measure elapsed time on its own since the system does not have a built-in hardware timer. Instead, OS implementers must manually calibrate the time unit by physically measuring it and hardcoding the value.
 
 # projects done in different repositories
 - [assembler](https://github.com/Scoobi-wisdoom/assembler)
