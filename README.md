@@ -1,3 +1,8 @@
+# Highlights
+- [compiler](/projects/11/project_solution)
+- [assembler](/projects/06/project_solution)
+- [VMTranslator](/projects/08/project_solution)
+
 # Overview
 This README is about notes on nand2tetris courses from [coursera - part 1](https://www.coursera.org/learn/build-a-computer) and [coursera - part 2](https://www.coursera.org/learn/nand2tetris2).
 
@@ -287,11 +292,6 @@ The keyboard feature reads user input, so it's important to wait for input befor
 The Sys initialization performs bootstrapping for the OS. Bootstrapping refers to setting up all necessary components before executing the main application.
 
 In the Nand2Tetris computer architecture, it cannot precisely measure elapsed time on its own since the system does not have a built-in hardware timer. Instead, OS implementers must manually calibrate the time unit by physically measuring it and hardcoding the value.
-
-# projects done in different repositories
-- [assembler](https://github.com/Scoobi-wisdoom/assembler)
-- [VMTranslator](https://github.com/Scoobi-wisdoom/VMTranslator)
-- [compiler](https://github.com/Scoobi-wisdoom/compiler)
 
 # References
 -  Noam Nisan, Shimon Schocken. (2021) The Elements of Computing Systems (2nd ed.). The MIT Press
